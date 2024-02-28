@@ -1,4 +1,5 @@
 from enum import Enum
+import random
 
 
 class Feedback(Enum):
@@ -49,7 +50,20 @@ class GameState:
         """
         Returns a new valid 5-letter Wordle word
         """
-        pass
+        # opening the file in read mode 
+        #word list found here: https://gist.github.com/scholtes/94f3c0303ba6a7768b47583aff36654d#file-wordle-la-txt
+        word_list_file = open("wordle-La.txt", "r") 
+
+        # reading the file 
+        data = word_list_file.read() 
+
+        # replacing end splitting the text 
+        # when newline ('\n') is seen. 
+        data_into_list = data.split("\n") 
+
+        word_list_file.close() 
+        
+        return random.choice(data_into_list)
 
     def print_game_state(self) -> None:
         """
