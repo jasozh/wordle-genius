@@ -1,6 +1,6 @@
 from enum import Enum
 from termcolor import cprint, colored
-
+import numpy as np
 
 class Feedback(Enum):
     GRAY = 0
@@ -27,7 +27,7 @@ class GameState:
         #     [p, l, a, c, e],
         #     [w, h, i, n, y]
         # ]
-        self.guesses = []
+        self.guesses = np.empty(5, dtype=np.unicode_)
 
         # feedback has 6 rows, one for each guess. Each row is a list of enums
         # representing the feedback for each letter in the guess. For example,
@@ -38,7 +38,7 @@ class GameState:
         #     [0, 0, 0, 0, 0]
         #     [1, 0, 2, 0, 1]
         # ]
-        self.feedback = []
+        self.feedback = np.empty(5, dtype=np.int_)
 
         # turn is what the current player turn is, from 0 to 5 (6 guesses)
         self.turn = 0
@@ -75,7 +75,24 @@ class GameState:
         Takes in a guess from the player, increments the turn, updates the game
         state, and updates the feedback
         """
-        pass
+        guesses_temp = np.empty(5, dtype=np.unicode_)
+        feedback_temp = np.empty(5, dtype=np.unicode_)
+        index = 0
+        for l in guess:
+            guesses_temp[index] = l
+            if l in self.word:
+                if l == self.word[index]:
+                    feedback_temp[index] = 2
+                else:
+                   feedback_temp[index] = 1 
+            else:
+                feedback_temp[index] = 0
+            index += 1
+        self.guesses = np.vstack((self.guesses, guesses_temp))
+        self.feedback = np.vstack((self.feedback, feedback_temp))
+        self.turn += 1
+        if guess == self.word:
+            self.win = True
 
     def is_finished(self) -> bool:
         """
