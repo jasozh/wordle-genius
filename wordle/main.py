@@ -82,11 +82,11 @@ class GameState:
             guesses_temp[index] = l
             if l in self.word:
                 if l == self.word[index]:
-                    feedback_temp[index] = 2
+                    feedback_temp[index] = Feedback.GREEN
                 else:
-                   feedback_temp[index] = 1 
+                   feedback_temp[index] = Feedback.YELLOW
             else:
-                feedback_temp[index] = 0
+                feedback_temp[index] = Feedback.GRAY
             index += 1
         self.guesses = np.vstack((self.guesses, guesses_temp))
         self.feedback = np.vstack((self.feedback, feedback_temp))
