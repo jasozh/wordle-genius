@@ -99,6 +99,18 @@ class GameState:
         """
         return self.turn > 5 or self.win
 
+    def __repr__(self) -> str:
+        """
+        Returns a string representation of GameState
+        """
+        return (
+            f'word: {self.word}\n'
+            f'guesses: {self.guesses}\n'
+            f'feedback: {self.feedback}\n'
+            f'turn: {self.turn}\n'
+            f'win: {self.win}'
+        )
+
 
 class Bot:
     def __init__(self) -> None:
