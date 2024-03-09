@@ -1,4 +1,5 @@
 from enum import Enum
+import random
 from termcolor import cprint, colored
 
 
@@ -50,7 +51,22 @@ class GameState:
         """
         Returns a new valid 5-letter Wordle word
         """
-        pass
+        # word list found here: https://gist.github.com/scholtes/94f3c0303ba6a7768b47583aff36654d#file-wordle-la-txt
+        # La words that can be guessed and which can be the word of the day
+        # Ta words that can be guessed but are never selected as the word of the day
+
+        # opening the file in read mode
+        word_list_file = open("../public/wordle-La.txt", "r")
+
+        # reading the file
+        data = word_list_file.read()
+
+        # replacing end splitting the text
+        # when newline ('\n') is seen.
+        data_into_list = data.split("\n")
+
+        word_list_file.close()
+        return random.choice(data_into_list)
 
     def print_game_state(self) -> None:
         """
