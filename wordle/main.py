@@ -1,5 +1,6 @@
 from enum import Enum
 import random
+from termcolor import cprint, colored
 
 
 class Feedback(Enum):
@@ -72,7 +73,18 @@ class GameState:
         Prints out the current state of the board, using ANSI terminals for
         feedback
         """
-        pass
+        for turn in range(len(self.guesses)):
+            feedback = self.feedback[turn]
+            guess = self.guesses[turn]
+            for letter in range(len(guess)):
+                if feedback[letter] == Feedback.YELLOW:
+                    cprint(guess[letter], "yellow", end=" ")
+                elif feedback[letter] == Feedback.GREEN:
+                    cprint(guess[letter], "green", end=" ")
+                else:
+                    cprint(guess[letter], "white", end=" ")
+            # for the new line
+            print()
 
     def attempt_guess(self, guess: str) -> None:
         """
