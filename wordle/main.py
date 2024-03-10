@@ -1,3 +1,4 @@
+from bot.main import BotInterface
 from enum import Enum
 import random
 from termcolor import cprint, colored
@@ -100,21 +101,7 @@ class GameState:
         return self.turn > 5 or self.win
 
 
-class Bot:
-    def __init__(self) -> None:
-        """
-        Initializes a friendly AI bot to play Wordle!
-        """
-        pass
-
-    def generate_word(self, game: GameState) -> str:
-        """
-        Generates the next guess based on the current game state
-        """
-        pass
-
-
-def play_game(bot: Bot) -> GameState:
+def play_game(bot: BotInterface) -> GameState:
     """
     Non-interactively plays a game of Wordle and returns the finished game state
     """
