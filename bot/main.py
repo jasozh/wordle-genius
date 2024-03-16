@@ -14,6 +14,9 @@ class BotInterface(ABC):
         # win_rate is the number of games out of all games that the bot won
         self.win_rate = 0
 
+        # average_guesses is the average number of guesses used in a game
+        self.average_guesses = 0
+
         # possible_words is a set of words the bot is willing to guess
         self.possible_words = self.all_words()
 
@@ -122,4 +125,37 @@ class MiddleBot(BotInterface):
 
     def filter(self, game: GameState) -> None:
         # Filter out all words that cannot possibly be the final word
+        pass
+
+
+class HardBot(BotInterface):
+    def __init__(self) -> None:
+        super.__init__()
+
+    def generate_word(self, game: GameState) -> str:
+        """
+        Our smartest bot would have a metric for balancing when to continue
+        filtering out possibilities and when to input their guess. For example,
+        if the first word is STARE, and the game returns S, A, R, E as green,
+        and T as gray, would it be better for the bot to guess SPARE, SCARE,
+        SHARE etc, or guess CHAPS?
+
+        The algorithm is as follows:
+        1.  Choose a random word for the first guess.
+        2.  Have some sort of metric that defines when to run SimpleBot vs MiddleBot.
+        3.  Depending on the metric, either run SimpleBot to filter out more letters
+            or run MiddleBot to make the best possible guess.
+        """
+        # Randomly selects a possible word
+        return random.choice(self.possible_words)
+
+    def generate_metric(self, game: GameState) -> bool:
+        """
+        Returns True if HardBot should use MiddleBot's strategy and False if
+        HardBot should use SimpleBot's strategy.
+        """
+        pass
+
+    def filter(self, game: GameState) -> None:
+        # Filter out all remaining words that contain letters used in previous guess
         pass
