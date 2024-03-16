@@ -83,7 +83,7 @@ class SimpleBot(BotInterface):
         Our simplest bot would always guess words with letters it hadn't tried
         before until the last guess, or it cannot guess any more totally
         unique-lettered words. Then, it would piece together the information it
-        had received to make a final guess. 
+        had received to make a final guess.
 
         The algorithm is as follows:
         1.  Choose a random word for the first guess.
@@ -92,11 +92,27 @@ class SimpleBot(BotInterface):
         4.  Make a guess where green letters stay, and we mix around yellow letters.
         """
         # Randomly selects a possible word
-        return random.choice(self.possible_words)
+        while self.possible_words != [] and game.turn != 5:
+            return random.choice(self.possible_words)
+
+        # last turn or self.possible_words is empty
+        possible_correct_words = self.potential_final_guesses(game)
+        return random.choice(possible_correct_words)
 
     def filter(self, game: GameState) -> None:
         # Filter out all remaining words that contain letters used in previous guess
-        pass
+        guess = game.guesses[game.turn]  # list of letters
+        feedback = game.feedback[game.turn]  # list of enums
+        for letter in guess:
+            for word in self.possible_words:
+                if letter in word:
+                    self.possible_words.remove(word)
+
+    def potential_final_guesses(self, game):
+        """
+        Makes guesses of words based on feedback from previous turns
+        """
+        feedback = game.feedback
 
 
 class MiddleBot(BotInterface):
