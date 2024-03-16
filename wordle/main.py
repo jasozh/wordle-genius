@@ -76,7 +76,7 @@ class GameState:
         state, and updates the feedback
         """
         guesses_temp = np.empty(5, dtype=np.unicode_)
-        feedback_temp = np.empty(5, dtype=np.unicode_)
+        feedback_temp = np.empty(5, dtype=np.object_)
         index = 0
         for l in guess:
             guesses_temp[index] = l
