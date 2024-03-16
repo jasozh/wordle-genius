@@ -1,4 +1,4 @@
-from wordle.main import GameState
+from wordle.main import GameState, Feedback
 import random
 from abc import ABC, abstractmethod
 
@@ -122,4 +122,49 @@ class MiddleBot(BotInterface):
 
     def filter(self, game: GameState) -> None:
         # Filter out all words that cannot possibly be the final word
-        pass
+        guess, feedback = game.guesses[-1], game.feedback[-1]
+
+        # Filter letters into green, yellow, gray
+        green_indices = set()  # { (index, letter), ... }
+
+        yellow_letters = set()  # { 'a', 'b', ... }
+        yellow_indices = set()  # { (index, letter), ... }
+
+        gray_letters = set()  # { 'a', 'b', ... }
+        gray_indices = set()  # { (index, letter), ... }
+        for i in range(len(guess)):
+            letter = guess[i]
+            if feedback[i] == Feedback.GREEN:
+                green_indices.add((i, letter))
+            elif feedback[i] == Feedback.YELLOW:
+                yellow_letters.add(letter)
+                yellow_indices.add((i, letter))
+            else:
+                gray_letters.add(letter)
+                gray_indices.add((i, letter))
+
+        # Check each word to see if it matches criteria
+        words_to_remove = set()
+        for word in self.possible_words:
+            letters = {x for x in list(word)}  # { 'a', 'b', ... }
+            letters_indices = {x for x in enumerate(
+                list(word))}  # { (index, letter), ... }
+
+            # Check to see that every green exists in letters
+            if not green_indices.issubset(letters_indices):
+                words_to_remove.add(word)
+
+            # Check that every yellow letter exists but not at the same index
+            # If any yellow letter not in word, remove word
+            if not yellow_letters.issubset(letters):
+                words_to_remove.add(word)
+            # If any yellow letter is in the same index, remove word
+            elif len(yellow_indices & letters_indices) > 0:
+                words_to_remove.add(word)
+
+            # Check that none of the gray letters exist in the word
+            if len(gray_letters & letters) > 0:  # If any gray letter is in word, remove word
+                words_to_remove.add(word)
+
+        # Remove all words to be removed
+        self.possible_words = self.possible_words - words_to_remove
