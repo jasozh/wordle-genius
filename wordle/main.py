@@ -1,4 +1,6 @@
+from bot.main import BotInterface
 from enum import Enum
+import random
 from termcolor import cprint, colored
 import numpy as np
 
@@ -50,7 +52,22 @@ class GameState:
         """
         Returns a new valid 5-letter Wordle word
         """
-        pass
+        # word list found here: https://gist.github.com/scholtes/94f3c0303ba6a7768b47583aff36654d#file-wordle-la-txt
+        # La words that can be guessed and which can be the word of the day
+        # Ta words that can be guessed but are never selected as the word of the day
+
+        # opening the file in read mode
+        word_list_file = open("../public/wordle-La.txt", "r")
+
+        # reading the file
+        data = word_list_file.read()
+
+        # replacing end splitting the text
+        # when newline ('\n') is seen.
+        data_into_list = data.split("\n")
+
+        word_list_file.close()
+        return random.choice(data_into_list)
 
     def print_game_state(self) -> None:
         """
@@ -103,22 +120,20 @@ class GameState:
         """
         return self.turn > 5 or self.win
 
-
-class Bot:
-    def __init__(self) -> None:
+    def __repr__(self) -> str:
         """
-        Initializes a friendly AI bot to play Wordle!
+        Returns a string representation of GameState
         """
-        pass
-
-    def generate_word(self, game: GameState) -> str:
-        """
-        Generates the next guess based on the current game state
-        """
-        pass
+        return (
+            f'word: {self.word}\n'
+            f'guesses: {self.guesses}\n'
+            f'feedback: {self.feedback}\n'
+            f'turn: {self.turn}\n'
+            f'win: {self.win}'
+        )
 
 
-def play_game(bot: Bot) -> GameState:
+def play_game(bot: BotInterface) -> GameState:
     """
     Non-interactively plays a game of Wordle and returns the finished game state
     """
