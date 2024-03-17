@@ -90,6 +90,9 @@ class GameState:
             index += 1
         self.guesses = np.vstack((self.guesses, guesses_temp))
         self.feedback = np.vstack((self.feedback, feedback_temp))
+        if (self.turn == 0):
+            self.guesses = np.delete(self.guesses, 0, 0)
+            self.feedback = np.delete(self.feedback, 0, 0)
         self.turn += 1
         if guess == self.word:
             self.win = True
@@ -142,7 +145,7 @@ def play():
 
     # End game
     print("Thanks for playing wordle!")
-    if game.won:
+    if game.win:
         print("Congratulations! You won Wordle!")
     else:
         print("You lost. Better luck next time! Sad.")
