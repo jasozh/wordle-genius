@@ -29,7 +29,7 @@ class GameState:
         #     [p, l, a, c, e],
         #     [w, h, i, n, y]
         # ]
-        self.guesses = np.empty(5, dtype=np.unicode_)
+        self.guesses = np.array([])
 
         # feedback has 6 rows, one for each guess. Each row is a list of enums
         # representing the feedback for each letter in the guess. For example,
@@ -40,7 +40,7 @@ class GameState:
         #     [0, 0, 0, 0, 0]
         #     [1, 0, 2, 0, 1]
         # ]
-        self.feedback = np.empty(5, dtype=np.int_)
+        self.feedback = np.array([])
 
         # turn is what the current player turn is, from 0 to 5 (6 guesses)
         self.turn = 0
@@ -105,8 +105,8 @@ class GameState:
             else:
                 feedback_temp[index] = Feedback.GRAY
             index += 1
-        self.guesses = np.vstack((self.guesses, guesses_temp))
-        self.feedback = np.vstack((self.feedback, feedback_temp))
+        self.guesses = np.append(self.guesses, guesses_temp)
+        self.feedback = np.append(self.feedback, feedback_temp)
         if (self.turn == 0):
             self.guesses = np.delete(self.guesses, 0, 0)
             self.feedback = np.delete(self.feedback, 0, 0)
