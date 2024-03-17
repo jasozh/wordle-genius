@@ -33,6 +33,16 @@ class BotInterface(ABC):
         """
         pass
 
+    def play_game(self) -> GameState:
+        """
+        Non-interactively plays a game of Wordle and returns the finished game state
+        """
+        game = GameState()
+        while not game.is_finished():
+            guess = self.generate_word(game)
+            game.attempt_guess(guess)
+        return game
+
     # HELPER FUNCTIONS
 
     def all_words(self) -> set[str]:
