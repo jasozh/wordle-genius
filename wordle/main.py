@@ -3,6 +3,7 @@ import random
 from termcolor import cprint, colored
 import numpy as np
 
+
 class Feedback(Enum):
     GRAY = 0
     YELLOW = 1
