@@ -1,4 +1,4 @@
-from bot.main import BotInterface
+# from bot.main import BotInterface
 from enum import Enum
 import random
 from termcolor import cprint, colored
@@ -105,23 +105,12 @@ class GameState:
         Returns a string representation of GameState
         """
         return (
-            f'word: {self.word}\n'
-            f'guesses: {self.guesses}\n'
-            f'feedback: {self.feedback}\n'
-            f'turn: {self.turn}\n'
-            f'win: {self.win}'
+            f"word: {self.word}\n"
+            f"guesses: {self.guesses}\n"
+            f"feedback: {self.feedback}\n"
+            f"turn: {self.turn}\n"
+            f"win: {self.win}"
         )
-
-
-def play_game(bot: BotInterface) -> GameState:
-    """
-    Non-interactively plays a game of Wordle and returns the finished game state
-    """
-    game = GameState()
-    while not game.is_finished():
-        guess = bot.generate_word(game)
-        game.attempt_guess(guess)
-    return game
 
 
 def play():
@@ -144,3 +133,7 @@ def play():
         print("Congratulations! You won Wordle!")
     else:
         print("You lost. Better luck next time! Sad.")
+
+
+if __name__ == "__main__":
+    play()
