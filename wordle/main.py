@@ -92,7 +92,26 @@ class GameState:
         Takes in a guess from the player, increments the turn, updates the game
         state, and updates the feedback
         """
-        pass
+
+        guesses_temp = [0 for i in range(5)]
+        feedback_temp = [0 for i in range(5)]
+
+        index = 0
+        for l in guess:
+            guesses_temp[index] = l
+            if l in self.word:
+                if l == self.word[index]:
+                    feedback_temp[index] = Feedback.GREEN
+                else:
+                    feedback_temp[index] = Feedback.YELLOW
+            else:
+                feedback_temp[index] = Feedback.GRAY
+            index += 1
+        self.guesses.append(guesses_temp)
+        self.feedback.append(feedback_temp)
+        self.turn += 1
+        if guess == self.word:
+            self.win = True
 
     def is_finished(self) -> bool:
         """
@@ -129,7 +148,7 @@ def play():
 
     # End game
     print("Thanks for playing wordle!")
-    if game.won:
+    if game.win:
         print("Congratulations! You won Wordle!")
     else:
         print("You lost. Better luck next time! Sad.")
