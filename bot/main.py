@@ -17,6 +17,16 @@ class BotInterface(ABC):
         # possible_words is a set of words the bot is willing to guess
         self.possible_words = self.all_words()
 
+    def play_game(self) -> GameState:
+        """
+        Non-interactively plays a game of Wordle and returns the finished game state
+        """
+        game = GameState()
+        while not game.is_finished():
+            guess = self.generate_word(game)
+            game.attempt_guess(guess)
+        return game
+
     @abstractmethod
     def generate_word(self, game: GameState) -> str:
         """
@@ -112,6 +122,7 @@ class SimpleBot(BotInterface):
         """
         Makes guesses of words based on feedback from previous turns
         """
+        full_list = self.all_words()
         feedback = game.feedback
 
 
