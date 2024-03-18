@@ -1,4 +1,4 @@
-from wordle.main import GameState
+from wordle.main import GameState, Feedback
 import random
 from abc import ABC, abstractmethod
 
@@ -124,6 +124,21 @@ class SimpleBot(BotInterface):
         """
         full_list = self.all_words()
         feedback = game.feedback
+        guess_format = {}
+
+        for word in range(len(game.guesses)):
+            for letter in range(len(word)):
+                if guess_format[letter] in guess_format.keys():
+                    # already have a green letter there
+                    continue
+                else:
+                    if feedback[word][letter] == Feedback.GREEN:
+                        guess_format[letter] = game.guesses[word][
+                            letter
+                        ]  # set position of guess format to that letter
+                    elif feedback[word][letter] == Feedback.YELLOW:
+                        # guess is yellow
+                        pass
 
 
 class MiddleBot(BotInterface):
