@@ -1,7 +1,8 @@
 from enum import Enum
 import random
 from termcolor import cprint, colored
-import numpy as np
+
+# import numpy as np
 
 
 class Feedback(Enum):
@@ -123,12 +124,24 @@ class GameState:
         """
         Returns a string representation of GameState
         """
+        ret = ""
+        ret += self.word + "\n"
+
+        for i in range(len(self.guesses)):
+            ret += str(self.guesses[i]) + "\n"
+            ret += str(self.feedback[i]) + "\n"
+
+        ret += "turns: " + str(self.turn) + "\n"
+
+        ret += "Win? " + str(self.win) + "\n"
+        return ret
+
         return (
-            f'word: {self.word}\n'
-            f'guesses: {self.guesses}\n'
-            f'feedback: {self.feedback}\n'
-            f'turn: {self.turn}\n'
-            f'win: {self.win}'
+            f"word: {self.word}\n"
+            f"guesses: {self.guesses}\n"
+            # f"feedback: {self.feedback}\n"
+            f"turn: {self.turn}\n"
+            f"win: {self.win}"
         )
 
 
@@ -152,3 +165,7 @@ def play():
         print("Congratulations! You won Wordle!")
     else:
         print("You lost. Better luck next time! Sad.")
+
+
+if __name__ == "__main__":
+    play()
