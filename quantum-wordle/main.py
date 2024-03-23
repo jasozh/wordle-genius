@@ -69,7 +69,7 @@ class GameState:
 
         word_list_file.close()
         return random.choice(data_into_list)
-    
+
     def generate_second_word(self) -> str:
         """
         Returns a new valid 5-letter Wordle word, without letters used in the first generated word
@@ -137,22 +137,22 @@ class GameState:
                     feedback_temp[index] = Feedback.GREEN
                     foundinone = True
                 else:
-                   feedback_temp[index] = Feedback.YELLOW
-                   foundinone = True
+                    feedback_temp[index] = Feedback.YELLOW
+                    foundinone = True
             if l in self.word2:
                 if l == self.word2[index]:
                     feedback_temp[index] = Feedback.GREEN
                     foundintwo = True
                 else:
-                   feedback_temp[index] = Feedback.YELLOW
-                   foundintwo = True
+                    feedback_temp[index] = Feedback.YELLOW
+                    foundintwo = True
             index += 1
         if foundinone and foundintwo:
             for l in range(len(feedback_temp)):
                 if feedback_temp[l] == Feedback.GREEN:
                     feedback_temp[l] = Feedback.HALFGREEN
                 elif feedback_temp[l] == Feedback.YELLOW:
-                   feedback_temp[l] = Feedback.HALFYELLOW
+                    feedback_temp[l] = Feedback.HALFYELLOW
         self.guesses.append(guesses_temp)
         self.feedback.append(feedback_temp)
         self.turn += 1
@@ -170,12 +170,14 @@ class GameState:
         Returns a string representation of GameState
         """
         return (
-            f'word: {self.word}\n'
+            f'word1: {self.word1}\n'
+            f'word2: {self.word2}\n'
             f'guesses: {self.guesses}\n'
             f'feedback: {self.feedback}\n'
             f'turn: {self.turn}\n'
             f'win: {self.win}'
         )
+
 
 def play():
     """
