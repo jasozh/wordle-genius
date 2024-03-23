@@ -142,7 +142,6 @@ class SimpleBot(BotInterface):
 
     def filter(self, next_guess: str) -> None:
         # Filter out all remaining words that contain letters used in previous guess
-        print("guess:", next_guess)
         words_to_remove = set()
         for letter in next_guess:
             for word in self.possible_words:
