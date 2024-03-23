@@ -27,6 +27,23 @@ class BotInterface(ABC):
             game.attempt_guess(guess)
         return game
 
+    def play_games(self, n: int) -> None:
+        """
+        Non-interactively plays n games of Wordle
+        """
+        for _ in range(n):
+            self.play_game()
+
+    def __repr__(self) -> str:
+        """
+        Returns a string representation of Bot
+        """
+        return (
+            f"games: {self.games}\n"
+            f"win rate: {self.win_rate}\n"
+            f"number of possible words: {len(self.possible_words)}"
+        )
+
     @abstractmethod
     def generate_word(self, game: GameState) -> str:
         """
