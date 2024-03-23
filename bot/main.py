@@ -78,8 +78,8 @@ class BotInterface(ABC):
         # Ta words that can be guessed but are never selected as the word of the day
 
         # opening the file in read mode
-        valid_word_list_file = open("../public/wordle-La.txt", "r")
-        invalid_word_list_file = open("../public/wordle-Ta.txt", "r")
+        valid_word_list_file = open("public/wordle-La.txt", "r")
+        invalid_word_list_file = open("public/wordle-Ta.txt", "r")
 
         # reading the file
         valid_data = valid_word_list_file.read()
@@ -125,20 +125,32 @@ class SimpleBot(BotInterface):
         4.  Make a guess where green letters stay, and we mix around yellow letters.
         """
         # Randomly selects a possible word
-        while self.possible_words != [] and game.turn != 5:
-            return random.choice(self.possible_words)
+        if len(self.possible_words) != 0 and game.turn != 5:
+            print(
+                "length of possible words:",
+                len(self.possible_words),
+                "turn:",
+                game.turn,
+            )
+            next_guess = random.choice(list(self.possible_words))
+            self.filter(next_guess)  # filter out the next guess
+        else:
+            # last turn or self.possible_words is empty
+            possible_correct_words = self.potential_final_guesses(game)
+            next_guess = random.choice(list(possible_correct_words))
+        return next_guess
 
-        # last turn or self.possible_words is empty
-        possible_correct_words = self.potential_final_guesses(game)
-        return random.choice(possible_correct_words)
-
-    def filter(self, game: GameState) -> None:
+    def filter(self, next_guess: str) -> None:
         # Filter out all remaining words that contain letters used in previous guess
-        guess = game.guesses[game.turn]  # list of letters
-        for letter in guess:
+        print("guess:", next_guess)
+        words_to_remove = set()
+        for letter in next_guess:
             for word in self.possible_words:
+                # print(letter, word)
                 if letter in word:
-                    self.possible_words.remove(word)
+                    words_to_remove.add(word)
+
+        self.possible_words -= words_to_remove
 
     def potential_final_guesses(self, game):
         """
@@ -151,7 +163,7 @@ class SimpleBot(BotInterface):
         yellow_format = {}  # keys are letter pos & yellow letters that don't fit there
 
         for word in range(len(game.guesses)):  # words that have been guessed
-            for idx in range(len(word)):  # letter position in that word
+            for idx in range(len(game.guesses[word])):  # letter position in that word
                 letter = game.guesses[word][idx]
                 if feedback[word][idx] == Feedback.GREEN:
                     green_format[idx] = letter  # add to green_format dict
@@ -163,20 +175,30 @@ class SimpleBot(BotInterface):
                     else:
                         yellow_format[idx].add(letter)
 
+        words_to_remove = set()
         for word in full_set:
             for idx in range(len(word)):
                 letter = word[idx]
-                if green_format[idx] != letter:
-                    full_set.remove(word)
+                if letter in bad_letters:
+                    words_to_remove.add(word)
                     break
-                elif letter in yellow_format[idx]:
-                    full_set.remove(word)
-                    break
-                elif letter in bad_letters:
-                    full_set.remove(word)
-                    break
+                if idx not in green_format.keys() and idx not in yellow_format.keys():
+                    continue  # don't remove the word based on this
+                else:
+                    # print(idx in green_format.keys() ^ idx in yellow_format.keys())
+                    if idx in green_format.keys():
+                        # print("must be in green format dict")
+                        if green_format[idx] != letter:
+                            words_to_remove.add(word)
+                            break
+                    else:
+                        # print("must be in yellow format dict")
+                        if letter in yellow_format[idx]:
+                            # print("in yellow")
+                            words_to_remove.add(word)
+                            break
 
-        return full_set
+        return full_set - words_to_remove
 
 
 class MiddleBot(BotInterface):
