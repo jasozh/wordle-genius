@@ -167,7 +167,6 @@ class MiddleBot(BotInterface):
             yellow_indices = set()  # { (index, letter), ... }
 
             gray_letters = set()  # { 'a', 'b', ... }
-            gray_indices = set()  # { (index, letter), ... }
 
             for i in range(len(guess)):
                 letter = guess[i]
@@ -178,7 +177,6 @@ class MiddleBot(BotInterface):
                     yellow_indices.add((i, letter))
                 else:
                     gray_letters.add(letter)
-                    gray_indices.add((i, letter))
 
             # Check each word to see if it matches criteria
             words_to_remove = set()
