@@ -57,7 +57,7 @@ class GameState:
         # Ta words that can be guessed but are never selected as the word of the day
 
         # opening the file in read mode
-        word_list_file = open("../public/wordle-La.txt", "r")
+        word_list_file = open("public/wordle-La.txt", "r")
 
         # reading the file
         data = word_list_file.read()
@@ -103,7 +103,7 @@ class GameState:
                 if l == self.word[index]:
                     feedback_temp[index] = Feedback.GREEN
                 else:
-                   feedback_temp[index] = Feedback.YELLOW
+                    feedback_temp[index] = Feedback.YELLOW
             else:
                 feedback_temp[index] = Feedback.GRAY
             index += 1
@@ -130,6 +130,7 @@ class GameState:
             f'turn: {self.turn}\n'
             f'win: {self.win}'
         )
+
 
 def play():
     """

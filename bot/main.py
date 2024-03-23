@@ -33,6 +33,40 @@ class BotInterface(ABC):
         """
         pass
 
+    def play_game(self) -> GameState:
+        """
+        Non-interactively plays a game of Wordle and returns the finished game state
+        """
+        game = GameState()
+        while not game.is_finished():
+            guess = self.generate_word(game)
+            game.attempt_guess(guess)
+
+        # Add to games, update win rate, and reset possible words
+        self.games.append(game)
+        self.possible_words = self.all_words()
+        if game.win:
+            self.win_rate += 1
+
+        return game
+
+    def play_games(self, n: int) -> None:
+        """
+        Non-interactively plays n games of Wordle
+        """
+        for _ in range(n):
+            self.play_game()
+
+    def __repr__(self) -> str:
+        """
+        Returns a string representation of Bot
+        """
+        return (
+            f'games: {self.games}\n'
+            f'win rate: {self.win_rate}\n'
+            f'number of possible words: {len(self.possible_words)}'
+        )
+
     # HELPER FUNCTIONS
 
     def all_words(self) -> set[str]:
@@ -44,8 +78,8 @@ class BotInterface(ABC):
         # Ta words that can be guessed but are never selected as the word of the day
 
         # opening the file in read mode
-        valid_word_list_file = open("../public/wordle-La.txt", "r")
-        invalid_word_list_file = open("../public/wordle-Ta.txt", "r")
+        valid_word_list_file = open("public/wordle-La.txt", "r")
+        invalid_word_list_file = open("public/wordle-Ta.txt", "r")
 
         # reading the file
         valid_data = valid_word_list_file.read()
@@ -62,16 +96,18 @@ class BotInterface(ABC):
 
 class DummyBot(BotInterface):
     def __init__(self) -> None:
-        super.__init__()
+        super().__init__()
 
     def generate_word(self, game: GameState) -> str:
         # Randomly selects a possible word
-        return random.choice(self.possible_words)
+        self.filter(game)
+        return random.choice(list(self.possible_words))
 
     def filter(self, game: GameState) -> None:
         # Filters out the last guess since we can't guess it again
-        last_guess = str(game.guesses[game.turn])
-        self.possible_words.remove(last_guess)
+        if len(game.guesses) > 0:
+            last_guess = "".join(game.guesses[-1])
+            self.possible_words.remove(last_guess)
 
 
 class SimpleBot(BotInterface):
@@ -100,7 +136,7 @@ class SimpleBot(BotInterface):
 
 class MiddleBot(BotInterface):
     def __init__(self) -> None:
-        super.__init__()
+        super().__init__()
 
     def generate_word(self, game: GameState) -> str:
         """
@@ -116,53 +152,57 @@ class MiddleBot(BotInterface):
         3.  Repeat this until we win or lose.
         """
         # Randomly selects a possible word
-        return random.choice(self.possible_words)
+        self.filter(game)
+        return random.choice(list(self.possible_words))
 
     def filter(self, game: GameState) -> None:
         # Filter out all words that cannot possibly be the final word
-        guess, feedback = game.guesses[-1], game.feedback[-1]
+        if len(game.guesses) > 0:
+            guess, feedback = game.guesses[-1], game.feedback[-1]
 
-        # Filter letters into green, yellow, gray
-        green_indices = set()  # { (index, letter), ... }
+            # Filter guess letters into green, yellow, gray
+            green_indices = set()  # { (index, letter), ... }
 
-        yellow_letters = set()  # { 'a', 'b', ... }
-        yellow_indices = set()  # { (index, letter), ... }
+            yellow_letters = set()  # { 'a', 'b', ... }
+            yellow_indices = set()  # { (index, letter), ... }
 
-        gray_letters = set()  # { 'a', 'b', ... }
-        gray_indices = set()  # { (index, letter), ... }
-        for i in range(len(guess)):
-            letter = guess[i]
-            if feedback[i] == Feedback.GREEN:
-                green_indices.add((i, letter))
-            elif feedback[i] == Feedback.YELLOW:
-                yellow_letters.add(letter)
-                yellow_indices.add((i, letter))
-            else:
-                gray_letters.add(letter)
-                gray_indices.add((i, letter))
+            gray_letters = set()  # { 'a', 'b', ... }
+            gray_indices = set()  # { (index, letter), ... }
 
-        # Check each word to see if it matches criteria
-        words_to_remove = set()
-        for word in self.possible_words:
-            letters = {x for x in list(word)}  # { 'a', 'b', ... }
-            letters_indices = {x for x in enumerate(
-                list(word))}  # { (index, letter), ... }
+            for i in range(len(guess)):
+                letter = guess[i]
+                if feedback[i] == Feedback.GREEN:
+                    green_indices.add((i, letter))
+                elif feedback[i] == Feedback.YELLOW:
+                    yellow_letters.add(letter)
+                    yellow_indices.add((i, letter))
+                else:
+                    gray_letters.add(letter)
+                    gray_indices.add((i, letter))
 
-            # Check to see that every green exists in letters
-            if not green_indices.issubset(letters_indices):
-                words_to_remove.add(word)
+            # Check each word to see if it matches criteria
+            words_to_remove = set()
 
-            # Check that every yellow letter exists but not at the same index
-            # If any yellow letter not in word, remove word
-            if not yellow_letters.issubset(letters):
-                words_to_remove.add(word)
-            # If any yellow letter is in the same index, remove word
-            elif len(yellow_indices & letters_indices) > 0:
-                words_to_remove.add(word)
+            for word in self.possible_words:
+                letters = {x for x in list(word)}  # { 'a', 'b', ... }
+                letters_indices = {x for x in enumerate(
+                    list(word))}  # { (index, letter), ... }
 
-            # Check that none of the gray letters exist in the word
-            if len(gray_letters & letters) > 0:  # If any gray letter is in word, remove word
-                words_to_remove.add(word)
+                # Check to see that every green exists in letters
+                if not green_indices.issubset(letters_indices):
+                    words_to_remove.add(word)
 
-        # Remove all words to be removed
-        self.possible_words = self.possible_words - words_to_remove
+                # Check that every yellow letter exists but not at the same index
+                # If any yellow letter not in word, remove word
+                if not yellow_letters.issubset(letters):
+                    words_to_remove.add(word)
+                # If any yellow letter is in the same index, remove word
+                elif len(yellow_indices & letters_indices) > 0:
+                    words_to_remove.add(word)
+
+                # Check that none of the gray letters exist in the word
+                if len(gray_letters & letters) > 0:  # If any gray letter is in word, remove word
+                    words_to_remove.add(word)
+
+            # Remove all words to be removed
+            self.possible_words = self.possible_words - words_to_remove
