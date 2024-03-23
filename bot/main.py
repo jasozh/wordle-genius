@@ -94,7 +94,6 @@ class SimpleBot(BotInterface):
         before until the last guess, or it cannot guess any more totally
         unique-lettered words. Then, it would piece together the information it
         had received to make a final guess.
-
         The algorithm is as follows:
         1.  Choose a random word for the first guess.
         2.  Filter out all remaining words that contain letters used in guess 1.
@@ -112,7 +111,6 @@ class SimpleBot(BotInterface):
     def filter(self, game: GameState) -> None:
         # Filter out all remaining words that contain letters used in previous guess
         guess = game.guesses[game.turn]  # list of letters
-        feedback = game.feedback[game.turn]  # list of enums
         for letter in guess:
             for word in self.possible_words:
                 if letter in word:
@@ -122,23 +120,39 @@ class SimpleBot(BotInterface):
         """
         Makes guesses of words based on feedback from previous turns
         """
-        full_list = self.all_words()
+        full_set = self.all_words()
         feedback = game.feedback
-        guess_format = {}
+        green_format = {}  # keys are letter positions & values are letter positions
+        bad_letters = set()
+        yellow_format = {}  # keys are letter pos & yellow letters that don't fit there
 
-        for word in range(len(game.guesses)):
-            for letter in range(len(word)):
-                if guess_format[letter] in guess_format.keys():
-                    # already have a green letter there
-                    continue
-                else:
-                    if feedback[word][letter] == Feedback.GREEN:
-                        guess_format[letter] = game.guesses[word][
-                            letter
-                        ]  # set position of guess format to that letter
-                    elif feedback[word][letter] == Feedback.YELLOW:
-                        # guess is yellow
-                        pass
+        for word in range(len(game.guesses)):  # words that have been guessed
+            for idx in range(len(word)):  # letter position in that word
+                letter = game.guesses[word][idx]
+                if feedback[word][idx] == Feedback.GREEN:
+                    green_format[idx] = letter  # add to green_format dict
+                elif feedback[word][idx] == Feedback.GRAY:
+                    bad_letters.add(letter)  # guess can't have letter in final guess
+                else:  # letter is yellow
+                    if idx not in yellow_format.keys():
+                        yellow_format[idx] = set(letter)
+                    else:
+                        yellow_format[idx].add(letter)
+
+        for word in full_set:
+            for idx in range(len(word)):
+                letter = word[idx]
+                if green_format[idx] != letter:
+                    full_set.remove(word)
+                    break
+                elif letter in yellow_format[idx]:
+                    full_set.remove(word)
+                    break
+                elif letter in bad_letters:
+                    full_set.remove(word)
+                    break
+
+        return full_set
 
 
 class MiddleBot(BotInterface):
@@ -149,7 +163,6 @@ class MiddleBot(BotInterface):
         """
         Our middle bot would filter out impossible words based off of the game's
         feedback.
-
         The algorithm is as follows:
         1.  Choose a random word for the first guess. Suppose we guess "stare"
             and "r" and "e" are both yellow.
