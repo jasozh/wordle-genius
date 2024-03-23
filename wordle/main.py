@@ -58,7 +58,7 @@ class GameState:
         # Ta words that can be guessed but are never selected as the word of the day
 
         # opening the file in read mode
-        word_list_file = open("../public/wordle-La.txt", "r")
+        word_list_file = open("public/wordle-La.txt", "r")
 
         # reading the file
         data = word_list_file.read()
@@ -124,10 +124,22 @@ class GameState:
         """
         Returns a string representation of GameState
         """
+        ret = ""
+        ret += self.word + "\n"
+
+        for i in range(len(self.guesses)):
+            ret += str(self.guesses[i]) + "\n"
+            ret += str(self.feedback[i]) + "\n"
+
+        ret += "turns: " + str(self.turn) + "\n"
+
+        ret += "Win? " + str(self.win) + "\n"
+        return ret
+
         return (
             f"word: {self.word}\n"
             f"guesses: {self.guesses}\n"
-            f"feedback: {self.feedback}\n"
+            # f"feedback: {self.feedback}\n"
             f"turn: {self.turn}\n"
             f"win: {self.win}"
         )
