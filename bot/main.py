@@ -84,7 +84,6 @@ class SimpleBot(BotInterface):
         before until the last guess, or it cannot guess any more totally
         unique-lettered words. Then, it would piece together the information it
         had received to make a final guess. 
-
         The algorithm is as follows:
         1.  Choose a random word for the first guess.
         2.  Filter out all remaining words that contain letters used in guess 1.
@@ -107,7 +106,6 @@ class MiddleBot(BotInterface):
         """
         Our middle bot would filter out impossible words based off of the game's
         feedback.
-
         The algorithm is as follows:
         1.  Choose a random word for the first guess. Suppose we guess "stare"
             and "r" and "e" are both yellow.
