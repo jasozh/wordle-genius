@@ -25,6 +25,13 @@ class BotInterface(ABC):
         while not game.is_finished():
             guess = self.generate_word(game)
             game.attempt_guess(guess)
+
+        # Add to games, update win rate, and reset possible words
+        self.games.append(game)
+        self.possible_words = self.all_words()
+        if game.win:
+            self.win_rate += 1
+
         return game
 
     def play_games(self, n: int) -> None:
@@ -103,7 +110,7 @@ class DummyBot(BotInterface):
 
 class SimpleBot(BotInterface):
     def __init__(self) -> None:
-        super.__init__()
+        super().__init__()
 
     def generate_word(self, game: GameState) -> str:
         """
