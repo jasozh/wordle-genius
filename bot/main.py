@@ -294,7 +294,7 @@ class MiddleBot(BotInterface):
 
 
 class HardBot(BotInterface):
-    # type: refers to 'aggregate' (green + yellow), 'pool', 'green', or 'yellow'
+    # type: refers to 'aggregate' (green + yellow), 'pool', 'green'
     # metric: number related to the type
     # Ex 1: HardBot(type='aggregate', metric=3)
     #       this bot will switch to trying to Middle Bot's strategy as soon as
@@ -350,6 +350,9 @@ class HardBot(BotInterface):
                     self.metric_met = True
             elif self.type == "green":
                 if self.num_green >= self.metric:
+                    self.metric_met = True
+            elif self.type == "yellow":
+                if self.num_yellow >= self.metric:
                     self.metric_met = True
             else:
                 possible_correct_words = self.potential_final_guesses(game)
@@ -429,28 +432,37 @@ if __name__ == "__main__":
     # generate data for 100 games per bot
     # record type and thresholds
     for i in range(6):
-        print("Testing Aggregate bot " + str(i) + " right now.")
-        bot = HardBot("aggregate", i)
+        print("Testing Yellow bot " + str(i) + " right now.")
+        bot = HardBot("yreen", i)
         bot.play_games(100)
-        with open("data/aggregate_data.txt", "a") as f:
+        with open("data/yellow_data.txt", "a") as f:
             f.write(
-                f"Type: Aggregate, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
+                f"Type: Yellow, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
             )
 
-    for i in range(6):
-        print("Testing Green bot " + str(i) + " right now.")
-        bot = HardBot("green", i)
-        bot.play_games(100)
-        with open("data/green_data.txt", "a") as f:
-            f.write(
-                f"Type: Green, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
-            )
+    # for i in range(6):
+    #     print("Testing Aggregate bot " + str(i) + " right now.")
+    #     bot = HardBot("aggregate", i)
+    #     bot.play_games(100)
+    #     with open("data/aggregate_data.txt", "a") as f:
+    #         f.write(
+    #             f"Type: Aggregate, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
+    #         )
 
-    for i in range(0, 100, 10):
-        print("Testing pool bot " + str(i) + " right now.")
-        bot = HardBot("pool", i)
-        bot.play_games(100)
-        with open("data/pool_data.txt", "a") as f:
-            f.write(
-                f"Type: Pool, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
-            )
+    # for i in range(6):
+    #     print("Testing Green bot " + str(i) + " right now.")
+    #     bot = HardBot("green", i)
+    #     bot.play_games(100)
+    #     with open("data/green_data.txt", "a") as f:
+    #         f.write(
+    #             f"Type: Green, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
+    #         )
+
+    # for i in range(0, 100, 10):
+    #     print("Testing pool bot " + str(i) + " right now.")
+    #     bot = HardBot("pool", i)
+    #     bot.play_games(100)
+    #     with open("data/pool_data.txt", "a") as f:
+    #         f.write(
+    #             f"Type: Pool, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
+    #         )
