@@ -1,0 +1,10 @@
+Type: Pool, Metric: 0, Total number of games: 100, Win rate: 0.66, Avg turns: 5.63
+Type: Pool, Metric: 10, Total number of games: 100, Win rate: 0.62, Avg turns: 5.5
+Type: Pool, Metric: 20, Total number of games: 100, Win rate: 0.6, Avg turns: 5.61
+Type: Pool, Metric: 30, Total number of games: 100, Win rate: 0.63, Avg turns: 5.63
+Type: Pool, Metric: 40, Total number of games: 100, Win rate: 0.65, Avg turns: 5.57
+Type: Pool, Metric: 50, Total number of games: 100, Win rate: 0.58, Avg turns: 5.55
+Type: Pool, Metric: 60, Total number of games: 100, Win rate: 0.66, Avg turns: 5.54
+Type: Pool, Metric: 70, Total number of games: 100, Win rate: 0.61, Avg turns: 5.64
+Type: Pool, Metric: 80, Total number of games: 100, Win rate: 0.63, Avg turns: 5.52
+Type: Pool, Metric: 90, Total number of games: 100, Win rate: 0.67, Avg turns: 5.61
