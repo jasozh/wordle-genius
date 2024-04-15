@@ -118,7 +118,8 @@ class GameState:
         """
         Returns whether the game is over or not
         """
-        return self.turn > 5 or self.win
+        # return self.turn > 5 or self.win
+        return self.win
 
     def __repr__(self) -> str:
         """
