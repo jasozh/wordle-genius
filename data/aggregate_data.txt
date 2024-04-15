@@ -1,0 +1,6 @@
+Type: Aggregate, Metric: 0, Total number of games: 100, Win rate: 0.61, Avg turns: 5.56
+Type: Aggregate, Metric: 1, Total number of games: 100, Win rate: 0.7, Avg turns: 5.53
+Type: Aggregate, Metric: 2, Total number of games: 100, Win rate: 0.66, Avg turns: 5.53
+Type: Aggregate, Metric: 3, Total number of games: 100, Win rate: 0.54, Avg turns: 5.61
+Type: Aggregate, Metric: 4, Total number of games: 100, Win rate: 0.66, Avg turns: 5.64
+Type: Aggregate, Metric: 5, Total number of games: 100, Win rate: 0.58, Avg turns: 5.75
