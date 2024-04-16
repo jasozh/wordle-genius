@@ -110,17 +110,19 @@ class GameState:
             index += 1
         self.guesses.append(guesses_temp)
         self.feedback.append(feedback_temp)
-        self.turn += 1
         if guess == self.word:
             self.win = True
+        else:
+            self.turn += 1
 
-    def is_finished(self, max_turns=5) -> bool:
+    def is_finished(self, max_turns=6) -> bool:
         """
         Returns whether the game is over or not. The game is over if the player
-        wins or if the turn count exceeds max_turns. Default is 5 for regular
+        wins or if the turn count exceeds max_turns. Default is 6 for regular
         Wordle games.
         """
-        return self.turn > max_turns or self.win
+        # Subtract 1 because self.turn is 0-indexed
+        return self.turn > max_turns - 1 or self.win
 
     def __repr__(self) -> str:
         """

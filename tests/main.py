@@ -7,11 +7,11 @@ if __name__ == "__main__":
     # record type and thresholds
     for i in range(6):
         print("Testing Yellow bot " + str(i) + " right now.")
-        bot = HardBot("yello", i)
+        bot = HardBot("yellow", i)
         bot.play_games(100)
         with open("tests/yellow_data.txt", "a") as f:
             f.write(
-                f"Type: Yellow, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.games_won/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
+                f"Type: Yellow, Metric: {i}, Total number of games: {len(bot.games)} Win rate: {bot.games_won / len(bot.games)}, Total turns for winning games: {bot.total_turns_won}, Avg turns: {round(bot.total_turns_won / bot.games_won, 2)}\n"
             )
 
     # for i in range(6):
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     #     bot.play_games(100)
     #     with open("data/aggregate_data.txt", "a") as f:
     #         f.write(
-    #             f"Type: Aggregate, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.games_won/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
+    #             f"Type: Aggregate, Metric: {i}, Total number of games: {len(bot.games)} Win rate: {bot.games_won / len(bot.games)}, Total turns for winning games: {bot.total_turns_won}, Avg turns: {round(bot.total_turns_won / bot.games_won, 2)}\n"
     #         )
 
     # for i in range(6):
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     #     bot.play_games(100)
     #     with open("data/green_data.txt", "a") as f:
     #         f.write(
-    #             f"Type: Green, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.games_won/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
+    #             f"Type: Green, Metric: {i}, Total number of games: {len(bot.games)} Win rate: {bot.games_won / len(bot.games)}, Total turns for winning games: {bot.total_turns_won}, Avg turns: {round(bot.total_turns_won / bot.games_won, 2)}\n"
     #         )
 
     # for i in range(0, 100, 10):
@@ -38,5 +38,5 @@ if __name__ == "__main__":
     #     bot.play_games(100)
     #     with open("data/pool_data.txt", "a") as f:
     #         f.write(
-    #             f"Type: Pool, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.games_won/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
+    #             f"Type: Pool, Metric: {i}, Total number of games: {len(bot.games)} Win rate: {bot.games_won / len(bot.games)}, Total turns for winning games: {bot.total_turns_won}, Avg turns: {round(bot.total_turns_won / bot.games_won, 2)}\n"
     #         )

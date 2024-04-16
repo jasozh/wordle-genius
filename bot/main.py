@@ -11,22 +11,17 @@ class BotInterface(ABC):
         # games is the list of all games that were played by the bot
         self.games = []
 
-        # win_rate is the number of games out of all games that the bot won
+        # games_won is the number of games out of all games that the bot won
         self.games_won = 0
 
         # possible_words is a set of words the bot is willing to guess
         self.possible_words = self.all_words()
 
-        # number of games played
-        self.num_games = 0
+        # total_turns_won is the total number of turns played for games that the
+        # bot won
+        self.total_turns_won = 0
 
-        # total number of turns
-        self.total_turns = 0
-
-        # average number of turns:
-        self.avg_turns = 0
-
-    def play_game(self, max_turns=5) -> GameState:
+    def play_game(self, max_turns=6) -> GameState:
         """
         Non-interactively plays a game of Wordle and returns the finished game state
         """
@@ -38,20 +33,21 @@ class BotInterface(ABC):
         # Add to games, update win rate, and reset possible words
         self.games.append(game)
 
-        # acumulate average number of turns and recompute average
-        self.total_turns += game.turn
+        # Accumulate average number of turns and recompute average
+        if game.win:
+            self.total_turns_won += game.turn + 1
 
         self.possible_words = self.all_words()
+
         if game.win:
             self.games_won += 1
 
         return game
 
-    def play_games(self, n: int, max_turns=5) -> None:
+    def play_games(self, n: int, max_turns=6) -> None:
         """
         Non-interactively plays n games of Wordle
         """
-        self.num_games = n
         for _ in range(n):
             self.play_game(max_turns)
 
@@ -61,10 +57,10 @@ class BotInterface(ABC):
         """
         return (
             # f"games: {self.games}\n"
-            f"number of games: {self.num_games}\n"
-            f"win rate: {self.games_won/self.num_games}\n"
+            f"number of games: {len(self.games)}\n"
+            f"win rate: {self.games_won/len(self.games)}\n"
             # f"number of possible words: {len(self.possible_words)}\n"
-            f"avg turns: {self.total_turns / self.num_games}\n"
+            f"avg turns to win: {round(self.total_turns_won / self.games_won, 2)}\n"
         )
 
     @abstractmethod
@@ -315,7 +311,7 @@ class HardBot(BotInterface):
         self.num_yellow = 0
         self.metric_met = False
 
-    def play_game(self, max_turns=5):
+    def play_game(self, max_turns=6):
         # reset things
         self.metric_met = False
         self.num_green = 0
