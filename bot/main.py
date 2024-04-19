@@ -11,49 +11,45 @@ class BotInterface(ABC):
         # games is the list of all games that were played by the bot
         self.games = []
 
-        # win_rate is the number of games out of all games that the bot won
-        self.win_rate = 0
+        # games_won is the number of games out of all games that the bot won
+        self.games_won = 0
 
         # possible_words is a set of words the bot is willing to guess
         self.possible_words = self.all_words()
 
-        # number of games played
-        self.num_games = 0
+        # total_turns_won is the total number of turns played for games that the
+        # bot won
+        self.total_turns_won = 0
 
-        # total number of turns
-        self.total_turns = 0
-
-        # average number of turns:
-        self.avg_turns = 0
-
-    def play_game(self) -> GameState:
+    def play_game(self, max_turns=6) -> GameState:
         """
         Non-interactively plays a game of Wordle and returns the finished game state
         """
         game = GameState()
-        while not game.is_finished():
+        while not game.is_finished(max_turns):
             guess = self.generate_word(game)
             game.attempt_guess(guess)
 
         # Add to games, update win rate, and reset possible words
         self.games.append(game)
 
-        # acumulate average number of turns and recompute average
-        self.total_turns += game.turn
+        # Accumulate average number of turns and recompute average
+        if game.win:
+            self.total_turns_won += game.turn + 1
 
         self.possible_words = self.all_words()
+
         if game.win:
-            self.win_rate += 1
+            self.games_won += 1
 
         return game
 
-    def play_games(self, n: int) -> None:
+    def play_games(self, n: int, max_turns=6) -> None:
         """
         Non-interactively plays n games of Wordle
         """
-        self.num_games = n
         for _ in range(n):
-            self.play_game()
+            self.play_game(max_turns)
 
     def __repr__(self) -> str:
         """
@@ -61,10 +57,10 @@ class BotInterface(ABC):
         """
         return (
             # f"games: {self.games}\n"
-            f"number of games: {self.num_games}\n"
-            f"win rate: {self.win_rate/self.num_games}\n"
+            f"number of games: {len(self.games)}\n"
+            f"win rate: {self.games_won/len(self.games)}\n"
             # f"number of possible words: {len(self.possible_words)}\n"
-            f"avg turns: {self.total_turns / self.num_games}\n"
+            f"avg turns to win: {round(self.total_turns_won / self.games_won, 2)}\n"
         )
 
     @abstractmethod
@@ -180,12 +176,14 @@ class SimpleBot(BotInterface):
         yellow_format = {}  # keys are letter pos & yellow letters that don't fit there
 
         for word in range(len(game.guesses)):  # words that have been guessed
-            for idx in range(len(game.guesses[word])):  # letter position in that word
+            # letter position in that word
+            for idx in range(len(game.guesses[word])):
                 letter = game.guesses[word][idx]
                 if feedback[word][idx] == Feedback.GREEN:
                     green_format[idx] = letter  # add to green_format dict
                 elif feedback[word][idx] == Feedback.GRAY:
-                    bad_letters.add(letter)  # guess can't have letter in final guess
+                    # guess can't have letter in final guess
+                    bad_letters.add(letter)
                 else:  # letter is yellow
                     if idx not in yellow_format.keys():
                         yellow_format[idx] = set(letter)
@@ -313,13 +311,13 @@ class HardBot(BotInterface):
         self.num_yellow = 0
         self.metric_met = False
 
-    def play_game(self):
+    def play_game(self, max_turns=6):
         # reset things
         self.metric_met = False
         self.num_green = 0
         self.num_yellow = 0
         # play the game
-        super().play_game()
+        super().play_game(max_turns)
 
     def generate_word(self, game: GameState) -> str:
         """
@@ -379,12 +377,14 @@ class HardBot(BotInterface):
         yellow_format = {}  # keys are letter pos & yellow letters that don't fit there
 
         for word in range(len(game.guesses)):  # words that have been guessed
-            for idx in range(len(game.guesses[word])):  # letter position in that word
+            # letter position in that word
+            for idx in range(len(game.guesses[word])):
                 letter = game.guesses[word][idx]
                 if feedback[word][idx] == Feedback.GREEN:
                     green_format[idx] = letter  # add to green_format dict
                 elif feedback[word][idx] == Feedback.GRAY:
-                    bad_letters.add(letter)  # guess can't have letter in final guess
+                    # guess can't have letter in final guess
+                    bad_letters.add(letter)
                 else:  # letter is yellow
                     if idx not in yellow_format.keys():
                         yellow_format[idx] = set(letter)
@@ -425,44 +425,3 @@ class HardBot(BotInterface):
                     words_to_remove.add(word)
 
         self.possible_words -= words_to_remove
-
-
-if __name__ == "__main__":
-
-    # generate data for 100 games per bot
-    # record type and thresholds
-    for i in range(6):
-        print("Testing Yellow bot " + str(i) + " right now.")
-        bot = HardBot("yreen", i)
-        bot.play_games(100)
-        with open("data/yellow_data.txt", "a") as f:
-            f.write(
-                f"Type: Yellow, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
-            )
-
-    # for i in range(6):
-    #     print("Testing Aggregate bot " + str(i) + " right now.")
-    #     bot = HardBot("aggregate", i)
-    #     bot.play_games(100)
-    #     with open("data/aggregate_data.txt", "a") as f:
-    #         f.write(
-    #             f"Type: Aggregate, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
-    #         )
-
-    # for i in range(6):
-    #     print("Testing Green bot " + str(i) + " right now.")
-    #     bot = HardBot("green", i)
-    #     bot.play_games(100)
-    #     with open("data/green_data.txt", "a") as f:
-    #         f.write(
-    #             f"Type: Green, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
-    #         )
-
-    # for i in range(0, 100, 10):
-    #     print("Testing pool bot " + str(i) + " right now.")
-    #     bot = HardBot("pool", i)
-    #     bot.play_games(100)
-    #     with open("data/pool_data.txt", "a") as f:
-    #         f.write(
-    #             f"Type: Pool, Metric: {i}, Total number of games: {bot.num_games}, Win rate: {bot.win_rate/bot.num_games}, Avg turns: {bot.total_turns / bot.num_games}\n"
-    #         )
