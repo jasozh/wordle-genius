@@ -1,0 +1,20 @@
+Type: Middle, Metric: 0, Total number of games: 100 Win rate: 0.84, Total turns for winning games: 390, Avg turns: 4.64
+Type: Middle, Metric: 1, Total number of games: 100 Win rate: 0.92, Total turns for winning games: 424, Avg turns: 4.61
+Type: Middle, Metric: 2, Total number of games: 100 Win rate: 0.86, Total turns for winning games: 394, Avg turns: 4.58
+Type: Middle, Metric: 3, Total number of games: 100 Win rate: 0.84, Total turns for winning games: 391, Avg turns: 4.65
+Type: Middle, Metric: 4, Total number of games: 100 Win rate: 0.93, Total turns for winning games: 425, Avg turns: 4.57
+Type: Middle, Metric: 5, Total number of games: 100 Win rate: 0.87, Total turns for winning games: 397, Avg turns: 4.56
+
+Type: Middle non-random, Metric: 0, Total number of games: 100 Win rate: 0.91, Total turns for winning games: 387, Avg turns: 4.25
+Type: Middle non-random, Metric: 1, Total number of games: 100 Win rate: 0.92, Total turns for winning games: 408, Avg turns: 4.43
+Type: Middle non-random, Metric: 2, Total number of games: 100 Win rate: 0.92, Total turns for winning games: 385, Avg turns: 4.18
+Type: Middle non-random, Metric: 3, Total number of games: 100 Win rate: 0.91, Total turns for winning games: 394, Avg turns: 4.33
+Type: Middle non-random, Metric: 4, Total number of games: 100 Win rate: 0.94, Total turns for winning games: 390, Avg turns: 4.15
+Type: Middle non-random, Metric: 5, Total number of games: 100 Win rate: 0.89, Total turns for winning games: 379, Avg turns: 4.26
+
+Type: Middle non-random, Metric: 0, Total number of games: 100 Win rate: 0.88, Total turns for winning games: 372, Avg turns: 4.23
+Type: Middle non-random, Metric: 1, Total number of games: 100 Win rate: 0.95, Total turns for winning games: 393, Avg turns: 4.14
+Type: Middle non-random, Metric: 2, Total number of games: 100 Win rate: 0.94, Total turns for winning games: 404, Avg turns: 4.3
+Type: Middle non-random, Metric: 3, Total number of games: 100 Win rate: 0.9, Total turns for winning games: 375, Avg turns: 4.17
+Type: Middle non-random, Metric: 4, Total number of games: 100 Win rate: 0.92, Total turns for winning games: 408, Avg turns: 4.43
+Type: Middle non-random, Metric: 5, Total number of games: 100 Win rate: 0.94, Total turns for winning games: 388, Avg turns: 4.13

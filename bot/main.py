@@ -159,8 +159,9 @@ class BotInterface(ABC):
             scores.append((word, score))
 
         scores_sorted = sorted(scores, reverse=True, key=lambda x: x[1])
-        print(scores_sorted[:10])
-        print(scores_sorted[-10:])
+        # print(scores_sorted[:10])
+        # print(scores_sorted[-10:])
+        # print(scores_sorted[0])
 
         # Return word with top score
         return scores_sorted[0][0]
@@ -295,7 +296,16 @@ class MiddleBot(BotInterface):
         """
         # Randomly selects a possible word
         self.filter(game)
-        return random.choice(list(self.possible_words))
+
+        print(
+            "length of possible words:",
+            len(self.possible_words),
+            "turn:",
+            game.turn,
+        )
+
+        # return random.choice(list(self.possible_words))
+        return self.generate_word_with_tf()
 
     def filter(self, game: GameState) -> None:
         # Filter out all words that cannot possibly be the final word
