@@ -1,4 +1,4 @@
-from main import *
+from wordle.main import *
 
 
 class Multi_Wordle(GameState):
@@ -11,9 +11,12 @@ class Multi_Wordle(GameState):
         self.guesses = []
         self.feedback = []
         self.answers = []
+
+        # self.answers = ["hello", "world", "robot", "bossy"]
         for idx in range(num_games):
-            new_game = super.__init__()
-            new_game.word = self.generate_word(new_game.answers)
+            new_game = GameState()
+            new_game.word = self.generate_words(self.answers)
+            # new_game.word = self.answers[idx]
             self.answers.append(new_game.word)
             self.games.append(new_game)
             self.guesses.append(new_game.guesses)
@@ -23,7 +26,7 @@ class Multi_Wordle(GameState):
         self.wins = 0
         self.win = self.wins == self.num_games
 
-    def generate_word(self, cant_pick_these):
+    def generate_words(self, cant_pick_these):
         """
         Generates a word according to GameState's function, with the caveat that
         there are words that cannot be picked (basically words already picked)
@@ -39,19 +42,26 @@ class Multi_Wordle(GameState):
         """
         Prints each game in the game_state of x_wordle
         """
-        for game in self.games:
-            game.print_game_state()
+        for idx in range(len((self.games))):
+            print(f"Board for game {idx}:")
+            self.games[idx].print_game_state()
+            print("\n")
 
     def attempt_guess(self, guess: str):
         """
         Attempts guess as the guess for each game in the game state
         """
-
+        win_count = 0
         for game in self.games:
+            if game.is_finished():
+                if game.win:  # still need to increment the win count if already won
+                    win_count += 1
+                continue
             game.attempt_guess(guess)
             if game.win:  # increment the number of wins
-                self.wins += 1
+                win_count += 1
         self.xturn += 1  # increment number of turns
+        self.wins = win_count
         self.win = self.wins == self.num_games
 
     def is_finished(self, max_turns=8) -> bool:
@@ -61,7 +71,7 @@ class Multi_Wordle(GameState):
         Wordle games.
         """
         # Subtract 1 because self.turn is 0-indexed
-        return self.turn > max_turns - 1 or self.wins == self.num_games
+        return self.xturn > max_turns - 1 or self.wins == self.num_games
 
     def __repr__(self) -> str:
         """
@@ -70,10 +80,12 @@ class Multi_Wordle(GameState):
         ret = "turns: " + str(self.xturn) + "\n"
 
         for idx in range(len(self.games)):
-            ret += str(idx) + " game: word is " + self.games[idx].word  # add the word
+            ret += f"{idx} game: word is {self.games[idx].word}\n"  # add the word
             for i in range(len(self.games[idx].guesses)):
                 ret += str(self.games[idx].guesses[i]) + "\n"
                 ret += str(self.games[idx].feedback[i]) + "\n"
+            ret += f"win? {self.games[idx].win}"
+            ret += "\n\n"
 
         ret += "Wins: " + str(self.wins) + "\n"
         ret += "Win? " + str(self.win) + "\n"
@@ -104,5 +116,8 @@ def play(game, max_turns=8):
 
 
 if __name__ == "__main__":
-    dwordle = Multi_Wordle(num_games=2)
-    dwordle.play()
+    # dwordle = Multi_Wordle(num_games=2)
+    # play(dwordle)
+
+    qwordle = Multi_Wordle(num_games=4)
+    play(qwordle, 10)
