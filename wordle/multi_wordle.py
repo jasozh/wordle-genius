@@ -6,24 +6,41 @@ class Multi_Wordle(GameState):
         """
         Initial num_games number of games to be played simultaneously
         """
+        # keep track of number of games
         self.num_games = num_games
+
+        # the list of games within multi-wordle
         self.games = []
+
+        # the guesses that have been made
         self.guesses = []
+
+        # the feedback for each game within Multi_Wordle
         self.feedback = []
+
+        # the list of correct words
         self.answers = []
 
-        # self.answers = ["hello", "world", "robot", "bossy"]
         for idx in range(num_games):
+            # for each game:
+            # create a game state
+            # generate a new answer word (cannot have been selected already)
+            # add the new word to self.answers; add the new_game to self.games
+            # add its feedback and guesses to the respective arrays
             new_game = GameState()
             new_game.word = self.generate_words(self.answers)
-            # new_game.word = self.answers[idx]
             self.answers.append(new_game.word)
             self.games.append(new_game)
             self.guesses.append(new_game.guesses)
             self.feedback.append(new_game.feedback)
 
+        # number of turns taken in this game
         self.xturn = 0
+
+        # keep track of the number of games within multi_wordle that have been won
         self.wins = 0
+
+        # have we won multi_wordle?
         self.win = self.wins == self.num_games
 
     def generate_words(self, cant_pick_these):
@@ -43,26 +60,28 @@ class Multi_Wordle(GameState):
         Prints each game in the game_state of x_wordle
         """
         for idx in range(len((self.games))):
-            print(f"Board for game {idx}:")
+            print(f"Board for Wordle game {idx}:")
             self.games[idx].print_game_state()
-            print("\n")
+            print()
 
-    def attempt_guess(self, guess: str):
+    def attempt_guess(self, guess: str, max_turns):
         """
         Attempts guess as the guess for each game in the game state
         """
         win_count = 0
         for game in self.games:
-            if game.is_finished():
+            if game.is_finished(max_turns):
+                # don't continue to play finished individual games
                 if game.win:  # still need to increment the win count if already won
                     win_count += 1
                 continue
-            game.attempt_guess(guess)
+            game.attempt_guess(guess)  # call parent method
             if game.win:  # increment the number of wins
                 win_count += 1
+
         self.xturn += 1  # increment number of turns
-        self.wins = win_count
-        self.win = self.wins == self.num_games
+        self.wins = win_count  # set the win count
+        self.win = self.wins == self.num_games  # check if you've won Multi_Wordle
 
     def is_finished(self, max_turns=8) -> bool:
         """
@@ -70,7 +89,7 @@ class Multi_Wordle(GameState):
         wins or if the turn count exceeds max_turns. Default is 6 for regular
         Wordle games.
         """
-        # Subtract 1 because self.turn is 0-indexed
+        # Subtract 1 because self.xturn is 0-indexed
         return self.xturn > max_turns - 1 or self.wins == self.num_games
 
     def __repr__(self) -> str:
@@ -94,7 +113,7 @@ class Multi_Wordle(GameState):
 
 def play(game, max_turns=8):
     """
-    Plays an interactive game of x-wordl.
+    Plays an interactive game of Multi_Wordle.
     """
     # Intro
     num = game.num_games
@@ -103,7 +122,7 @@ def play(game, max_turns=8):
     # Play game
     while not game.is_finished(max_turns=max_turns):
         guess = input("What is your guess?\n")
-        game.attempt_guess(guess)
+        game.attempt_guess(guess, max_turns)
         game.print_game_state()
 
     # End game
@@ -119,5 +138,5 @@ if __name__ == "__main__":
     # dwordle = Multi_Wordle(num_games=2)
     # play(dwordle)
 
-    qwordle = Multi_Wordle(num_games=4)
+    qwordle = Multi_Wordle(num_games=2)
     play(qwordle, 10)
