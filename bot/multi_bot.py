@@ -211,11 +211,8 @@ class GreedyBot(BotInterface):
 
     def __init__(self):
         """
-        NaiveBot specifically targets one game at a time in order; it does not care about
-        the other games occuring and does not attempt to solve them until they've solved
-        all previous games.
-        In other words, NaiveBot does not aim to solve the 'closest to finished' game;
-        instead always goes in order
+        GreedyBot scores each wordle game within Multi_Wordle, and greedily solves.
+        Scores are based on the feedback (according to Enum values)
         """
         super().__init__()
         self.scores = []
