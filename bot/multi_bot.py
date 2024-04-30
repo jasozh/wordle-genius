@@ -152,8 +152,8 @@ class BotInterface(ABC):
         words_to_remove = set()
         for word in full_set:
             letters_in_word = set(list(word))
-            if len(letters_in_word & yellow_letters) == 0 and len(yellow_letters) != 0:
-                # does not contain any of the yellow letters and yellow letters were found
+            if len(letters_in_word & yellow_letters) != len(yellow_letters):
+                # does not contain any of the yellow letters and yellow letters were foun
                 words_to_remove.add(word)
             elif len(letters_in_word & bad_letters) != 0:
                 # contains at least one bad letter
@@ -181,7 +181,6 @@ class BotInterface(ABC):
                                 # print("in yellow")
                                 words_to_remove.add(word)
                                 break
-
         self.possible_words = full_set - words_to_remove
 
 
@@ -289,13 +288,13 @@ class GreedyBot(BotInterface):
 
 
 if __name__ == "__main__":
-    nb = NaiveBot()
-    nb.play_games(5, max_turns=20, num_games=4)
+    # nb = NaiveBot()
+    # nb.play_games(5, max_turns=20, num_games=4)
 
     gb = GreedyBot()
     gb.play_games(5, max_turns=20, num_games=4)
 
-    print("NaiveBot:")
-    print(nb)
+    # print("NaiveBot:")
+    # print(nb)
     print("GreedyBot:")
     print(gb)
