@@ -140,12 +140,6 @@ class SimpleBot(BotInterface):
         """
         # Randomly selects a possible word
         if len(self.possible_words) != 0 and game.turn != 5:
-            print(
-                "length of possible words:",
-                len(self.possible_words),
-                "turn:",
-                game.turn,
-            )
             next_guess = random.choice(list(self.possible_words))
             self.filter(next_guess)  # filter out the next guess
         else:
@@ -174,6 +168,7 @@ class SimpleBot(BotInterface):
         green_format = {}  # keys are letter positions & values are letter positions
         bad_letters = set()
         yellow_format = {}  # keys are letter pos & yellow letters that don't fit there
+        yellow_letters = set()
 
         for word in range(len(game.guesses)):  # words that have been guessed
             # letter position in that word
@@ -185,6 +180,7 @@ class SimpleBot(BotInterface):
                     # guess can't have letter in final guess
                     bad_letters.add(letter)
                 else:  # letter is yellow
+                    yellow_letters.add(letter)
                     if idx not in yellow_format.keys():
                         yellow_format[idx] = set(letter)
                     else:
@@ -192,26 +188,36 @@ class SimpleBot(BotInterface):
 
         words_to_remove = set()
         for word in full_set:
-            for idx in range(len(word)):
-                letter = word[idx]
-                if letter in bad_letters:
-                    words_to_remove.add(word)
-                    break
-                if idx not in green_format.keys() and idx not in yellow_format.keys():
-                    continue  # don't remove the word based on this
-                else:
+            letters_in_word = set(list(word))
+            if len(letters_in_word & yellow_letters) != len(yellow_letters):
+                # does not contain any of the yellow letters and yellow letters were foun
+                words_to_remove.add(word)
+            elif len(letters_in_word & bad_letters) != 0:
+                # contains at least one bad letter
+                words_to_remove.add(word)
+            else:
+                for idx in range(len(word)):
+                    letter = word[idx]
                     # print(idx in green_format.keys() ^ idx in yellow_format.keys())
-                    if idx in green_format.keys():
-                        # print("must be in green format dict")
-                        if green_format[idx] != letter:
-                            words_to_remove.add(word)
-                            break
+                    if letter in bad_letters:
+                        break
+                    if (
+                        idx not in green_format.keys()
+                        and idx not in yellow_format.keys()
+                    ):
+                        continue  # don't remove the word based on this
                     else:
-                        # print("must be in yellow format dict")
-                        if letter in yellow_format[idx]:
-                            # print("in yellow")
-                            words_to_remove.add(word)
-                            break
+                        if idx in green_format.keys():
+                            # print("must be in green format dict")
+                            if green_format[idx] != letter:
+                                words_to_remove.add(word)
+                                break
+                        else:
+                            # print("must be in yellow format dict")
+                            if letter in yellow_format[idx]:
+                                # print("in yellow")
+                                words_to_remove.add(word)
+                                break
 
         return full_set - words_to_remove
 
@@ -375,6 +381,7 @@ class HardBot(BotInterface):
         green_format = {}  # keys are letter positions & values are letter positions
         bad_letters = set()
         yellow_format = {}  # keys are letter pos & yellow letters that don't fit there
+        yellow_letters = set()
 
         for word in range(len(game.guesses)):  # words that have been guessed
             # letter position in that word
@@ -386,6 +393,7 @@ class HardBot(BotInterface):
                     # guess can't have letter in final guess
                     bad_letters.add(letter)
                 else:  # letter is yellow
+                    yellow_letters.add(letter)
                     if idx not in yellow_format.keys():
                         yellow_format[idx] = set(letter)
                     else:
@@ -393,22 +401,32 @@ class HardBot(BotInterface):
 
         words_to_remove = set()
         for word in full_set:
-            for idx in range(len(word)):
-                letter = word[idx]
-                if letter in bad_letters:
-                    words_to_remove.add(word)
-                    break
-                if idx not in green_format.keys() and idx not in yellow_format.keys():
-                    continue  # don't remove the word based on this
-                else:
-                    if idx in green_format.keys():
-                        if green_format[idx] != letter:
-                            words_to_remove.add(word)
-                            break
+            letters_in_word = set(list(word))
+            if len(letters_in_word & yellow_letters) != len(yellow_letters):
+                # does not contain any of the yellow letters and yellow letters were foun
+                words_to_remove.add(word)
+            elif len(letters_in_word & bad_letters) != 0:
+                # contains at least one bad letter
+                words_to_remove.add(word)
+            else:
+                for idx in range(len(word)):
+                    letter = word[idx]
+                    if letter in bad_letters:
+                        break
+                    if (
+                        idx not in green_format.keys()
+                        and idx not in yellow_format.keys()
+                    ):
+                        continue  # don't remove the word based on this
                     else:
-                        if letter in yellow_format[idx]:
-                            words_to_remove.add(word)
-                            break
+                        if idx in green_format.keys():
+                            if green_format[idx] != letter:
+                                words_to_remove.add(word)
+                                break
+                        else:
+                            if letter in yellow_format[idx]:
+                                words_to_remove.add(word)
+                                break
 
         return full_set - words_to_remove
 
@@ -425,3 +443,13 @@ class HardBot(BotInterface):
                     words_to_remove.add(word)
 
         self.possible_words -= words_to_remove
+
+
+if __name__ == "__main__":
+    sb = SimpleBot()
+    sb.play_games(100)
+    print(sb)
+
+    hb = HardBot(type="pool", metric=3)
+    hb.play_games(100)
+    print(hb)

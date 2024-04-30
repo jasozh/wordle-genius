@@ -1,10 +1,10 @@
-Type: Pool, Metric: 0, Total number of games: 100, Win rate: 0.66, Avg turns: 5.63
-Type: Pool, Metric: 10, Total number of games: 100, Win rate: 0.62, Avg turns: 5.5
-Type: Pool, Metric: 20, Total number of games: 100, Win rate: 0.6, Avg turns: 5.61
-Type: Pool, Metric: 30, Total number of games: 100, Win rate: 0.63, Avg turns: 5.63
-Type: Pool, Metric: 40, Total number of games: 100, Win rate: 0.65, Avg turns: 5.57
-Type: Pool, Metric: 50, Total number of games: 100, Win rate: 0.58, Avg turns: 5.55
-Type: Pool, Metric: 60, Total number of games: 100, Win rate: 0.66, Avg turns: 5.54
-Type: Pool, Metric: 70, Total number of games: 100, Win rate: 0.61, Avg turns: 5.64
-Type: Pool, Metric: 80, Total number of games: 100, Win rate: 0.63, Avg turns: 5.52
-Type: Pool, Metric: 90, Total number of games: 100, Win rate: 0.67, Avg turns: 5.61
+Type: Pool, Metric: 0, Total number of games: 100, Win rate: 0.93, Total turns for winning games: 478, Avg turns: 5.14
+Type: Pool, Metric: 10, Total number of games: 100, Win rate: 0.94, Total turns for winning games: 454, Avg turns: 4.83
+Type: Pool, Metric: 20, Total number of games: 100, Win rate: 0.9, Total turns for winning games: 413, Avg turns: 4.59
+Type: Pool, Metric: 30, Total number of games: 100, Win rate: 0.94, Total turns for winning games: 438, Avg turns: 4.66
+Type: Pool, Metric: 40, Total number of games: 100, Win rate: 0.93, Total turns for winning games: 418, Avg turns: 4.49
+Type: Pool, Metric: 50, Total number of games: 100, Win rate: 0.89, Total turns for winning games: 407, Avg turns: 4.57
+Type: Pool, Metric: 60, Total number of games: 100, Win rate: 0.9, Total turns for winning games: 414, Avg turns: 4.6
+Type: Pool, Metric: 70, Total number of games: 100, Win rate: 0.96, Total turns for winning games: 431, Avg turns: 4.49
+Type: Pool, Metric: 80, Total number of games: 100, Win rate: 0.93, Total turns for winning games: 448, Avg turns: 4.82
+Type: Pool, Metric: 90, Total number of games: 100, Win rate: 0.94, Total turns for winning games: 430, Avg turns: 4.57
