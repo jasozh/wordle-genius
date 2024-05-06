@@ -1,6 +1,6 @@
-Type: Green, Metric: 0, Total number of games: 100, Win rate: 0.71, Avg turns: 5.5
-Type: Green, Metric: 1, Total number of games: 100, Win rate: 0.61, Avg turns: 5.67
-Type: Green, Metric: 2, Total number of games: 100, Win rate: 0.65, Avg turns: 5.55
-Type: Green, Metric: 3, Total number of games: 100, Win rate: 0.56, Avg turns: 5.7
-Type: Green, Metric: 4, Total number of games: 100, Win rate: 0.6, Avg turns: 5.75
-Type: Green, Metric: 5, Total number of games: 100, Win rate: 0.63, Avg turns: 5.72
+Type: Green, Metric: 0, Total number of games: 100 Win rate: 0.58, Total turns for winning games: 302, Avg turns: 5.21
+Type: Green, Metric: 1, Total number of games: 100 Win rate: 0.63, Total turns for winning games: 337, Avg turns: 5.35
+Type: Green, Metric: 2, Total number of games: 100 Win rate: 0.53, Total turns for winning games: 286, Avg turns: 5.4
+Type: Green, Metric: 3, Total number of games: 100 Win rate: 0.65, Total turns for winning games: 358, Avg turns: 5.51
+Type: Green, Metric: 4, Total number of games: 100 Win rate: 0.56, Total turns for winning games: 311, Avg turns: 5.55
+Type: Green, Metric: 5, Total number of games: 100 Win rate: 0.58, Total turns for winning games: 323, Avg turns: 5.57
