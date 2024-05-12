@@ -275,7 +275,8 @@ class GreedyBot(BotInterface):
             return None
 
         for idx in range(game.num_games):
-            if self.scores[idx] == 10:  # game was solved (and stopped being played)
+            # game was solved (and stopped being played)
+            if self.scores[idx] == 10:
                 continue
             feedback = game.feedback[idx][game.xturn - 1]
             score = 0
