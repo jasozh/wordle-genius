@@ -141,7 +141,7 @@ class GameState:
         return ret
 
 
-def play():
+def play(max_turns=6):
     """
     Plays an interactive game of Wordle.
     """
@@ -150,7 +150,7 @@ def play():
     game = GameState()
 
     # Play game
-    while not game.is_finished():
+    while not game.is_finished(max_turns=max_turns):
         guess = input("What is your guess?\n")
         game.attempt_guess(guess)
         game.print_game_state()
