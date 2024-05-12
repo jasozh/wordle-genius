@@ -2,6 +2,17 @@ from bot.main import *
 from wordle.main import *
 
 if __name__ == "__main__":
+    # generate data for 100 games per bot
+    # record type and thresholds
+    for i in range(6):
+        print("Testing Middle bot with non-random word choices" +
+              str(i) + " right now.")
+        bot = MiddleBot()
+        bot.play_games(100)
+        with open("tests/middlebot_data.txt", "a") as f:
+            f.write(
+                f"Type: Middle non-random, Metric: {i}, Total number of games: {len(bot.games)} Win rate: {bot.games_won / len(bot.games)}, Total turns for winning games: {bot.total_turns_won}, Avg turns: {round(bot.total_turns_won / bot.games_won, 2)}\n"
+            )
 
     # generate data for 100 games per bot
     # record type and thresholds

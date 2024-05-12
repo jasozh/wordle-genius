@@ -140,14 +140,6 @@ class GameState:
         ret += "Win? " + str(self.win) + "\n"
         return ret
 
-        return (
-            f"word: {self.word}\n"
-            f"guesses: {self.guesses}\n"
-            # f"feedback: {self.feedback}\n"
-            f"turn: {self.turn}\n"
-            f"win: {self.win}"
-        )
-
 
 def play(max_turns=6):
     """
