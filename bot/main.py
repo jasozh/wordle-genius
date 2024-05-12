@@ -1,5 +1,6 @@
 from wordle.main import GameState, Feedback
 import random
+import string
 from abc import ABC, abstractmethod
 
 
@@ -104,6 +105,66 @@ class BotInterface(ABC):
         valid_word_list_file.close()
         invalid_word_list_file.close()
         return set(data_into_list)
+
+    def possible_words_tf(self) -> dict[str, int]:
+        """
+        Given current possible Wordle guesses, returns a tuple of (key, value) where
+        key = letter and value = number of words with that letter. The list is
+        sorted in order, with the most common letter appearing first.
+
+        Example: tf = { "a": 5, "b": 3, ... }
+        """
+        alphabet = list(string.ascii_lowercase)
+        result = {}
+        for letter in alphabet:
+            words_with_letter = {
+                word
+                for word in self.possible_words
+                if letter in word
+            }
+            result[letter] = len(words_with_letter)
+
+        return result
+
+    def generate_word_with_tf(self) -> set[str]:
+        """
+        Looks at all words in self.possible_guesses and selects the next word
+        to guess based on letter frequency. A word is chosen if it contains the
+        most common letters.
+
+        Letter frequency is calculated as follows. Suppose we have the word "stair"
+        and the tf dictionary has the following:
+
+        tf = {
+            "s": 53,
+            "t": 49,
+            "a": 17,
+            "i": 19,
+            "r": 2
+        }
+
+        For all unique letters in the word, we sum up all the values, so "stair"
+        has score 140. Higher scores are better.
+
+        We make scores for every possible word and choose the word with the highest
+        score.
+        """
+        possible_tf = self.possible_words_tf()
+        scores = []  # ex: [ ("stair": 140), ... ]
+        for word in self.possible_words:
+            unique_letters = set(word)
+            score = 0
+            for letter in unique_letters:
+                score += possible_tf[letter]
+            scores.append((word, score))
+
+        scores_sorted = sorted(scores, reverse=True, key=lambda x: x[1])
+        # print(scores_sorted[:10])
+        # print(scores_sorted[-10:])
+        # print(scores_sorted[0])
+
+        # Return word with top score
+        return scores_sorted[0][0]
 
 
 class DummyBot(BotInterface):
@@ -235,7 +296,16 @@ class MiddleBot(BotInterface):
         """
         # Randomly selects a possible word
         self.filter(game)
-        return random.choice(list(self.possible_words))
+
+        print(
+            "length of possible words:",
+            len(self.possible_words),
+            "turn:",
+            game.turn,
+        )
+
+        # return random.choice(list(self.possible_words))
+        return self.generate_word_with_tf()
 
     def filter(self, game: GameState) -> None:
         # Filter out all words that cannot possibly be the final word
