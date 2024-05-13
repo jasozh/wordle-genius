@@ -2,10 +2,13 @@ from wordle.main import *
 
 
 class Multi_Wordle(GameState):
-    def __init__(self, num_games=2):
+    def __init__(self, num_games=2, words=None):
         """
         Initial num_games number of games to be played simultaneously
+
+        words: an optional list of pre-determined answers to this game
         """
+        assert words is None or len(words) == num_games
         # keep track of number of games
         self.num_games = num_games
 
@@ -19,20 +22,33 @@ class Multi_Wordle(GameState):
         self.feedback = []
 
         # the list of correct words
-        self.answers = []
+        if words is None:
+            self.answers = []
 
-        for idx in range(num_games):
-            # for each game:
-            # create a game state
-            # generate a new answer word (cannot have been selected already)
-            # add the new word to self.answers; add the new_game to self.games
-            # add its feedback and guesses to the respective arrays
-            new_game = GameState()
-            new_game.word = self.generate_words(self.answers)
-            self.answers.append(new_game.word)
-            self.games.append(new_game)
-            self.guesses.append(new_game.guesses)
-            self.feedback.append(new_game.feedback)
+            for idx in range(num_games):
+                # for each game:
+                # create a game state
+                # generate a new answer word (cannot have been selected already)
+                # add the new word to self.answers; add the new_game to self.games
+                # add its feedback and guesses to the respective arrays
+                new_game = GameState()
+                new_game.word = self.generate_words(self.answers)
+                self.answers.append(new_game.word)
+                self.games.append(new_game)
+                self.guesses.append(new_game.guesses)
+                self.feedback.append(new_game.feedback)
+        else:
+            self.answers = words
+            for idx in range(num_games):
+                # for each game:
+                # create a game state
+                # generate a new answer word (cannot have been selected already)
+                # add the new word to self.answers; add the new_game to self.games
+                # add its feedback and guesses to the respective arrays
+                new_game = GameState(self.answers[idx])
+                self.games.append(new_game)
+                self.guesses.append(new_game.guesses)
+                self.feedback.append(new_game.feedback)
 
         # number of turns taken in this game
         self.xturn = 0

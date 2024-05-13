@@ -12,14 +12,19 @@ class Feedback(Enum):
 
 
 class GameState:
-    def __init__(self) -> None:
+    def __init__(self, word=None) -> None:
         """
         Initializes a new empty game state
+
+        Can optionally set the correct answer beforehand
         """
         # word is a list of chars for each letter in the actual word
         #
         # Example: [s, p, a, i, n]
-        self.word = self.generate_word()
+        if word is None:
+            self.word = self.generate_word()
+        else:
+            self.word = word
 
         # guesses has 6 rows, one for each guess. Each row is a list of chars
         # representing the letters in the guess.

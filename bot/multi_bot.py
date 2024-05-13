@@ -25,11 +25,13 @@ class BotInterface(ABC):
         # keeps track of which game to attempt to solve
         self.to_solve = 0  # start by trying to solve 0th game
 
-    def play_game(self, max_turns=8, num_games=2) -> Multi_Wordle:
+    def play_game(self, max_turns=8, num_games=2, words=None) -> Multi_Wordle:
         """
         Non-interactively plays a game of Wordle and returns the finished game state
+
+        words: the list of words for this game
         """
-        game = Multi_Wordle(num_games=num_games)
+        game = Multi_Wordle(num_games=num_games, words=words)
         while not game.is_finished(max_turns=max_turns):
             guess = self.generate_word(game)
             if guess is None:
@@ -50,15 +52,23 @@ class BotInterface(ABC):
             self.games_won += 1
         return game
 
-    def play_games(self, n: int, max_turns=8, num_games=2) -> None:
+    def play_games(self, n: int, max_turns=8, num_games=2, words=None) -> None:
         """
         Non-interactively plays n games of Wordle
+
+        words: a list of word lists to be specified by user
         """
         for i in range(n):
-            print(f"Playing Multi_Wordle game number {i+1}")
-            game = self.play_game(max_turns=max_turns, num_games=num_games)
-            print(f"Turns: {game.xturn}")
-            game.print_game_state()
+            # print(f"Playing Multi_Wordle game number {i+1}")
+            if words is not None:
+                game = self.play_game(
+                    max_turns=max_turns, num_games=num_games, words=words[i]
+                )
+            else:
+                game = self.play_game(max_turns=max_turns, num_games=num_games)
+            # print(game.answers)
+            # print(f"Turns: {game.xturn}")
+            # game.print_game_state()
 
     def __repr__(self) -> str:
         """
@@ -216,11 +226,11 @@ class GreedyBot(BotInterface):
         super().__init__()
         self.scores = []
 
-    def play_game(self, max_turns=8, num_games=2) -> Multi_Wordle:
+    def play_game(self, max_turns=8, num_games=2, words=None) -> Multi_Wordle:
         """
         Non-interactively plays a game of Wordle and returns the finished game state
         """
-        game = Multi_Wordle(num_games=num_games)
+        game = Multi_Wordle(num_games=num_games, words=words)
         self.scores = [0] * num_games
         while not game.is_finished(max_turns=max_turns):
             guess = self.generate_word(game)
@@ -289,13 +299,14 @@ class GreedyBot(BotInterface):
 
 
 if __name__ == "__main__":
-    # nb = NaiveBot()
-    # nb.play_games(5, max_turns=20, num_games=4)
+    nb = NaiveBot()
+    nb.play_games(100, max_turns=20, num_games=4)
 
     gb = GreedyBot()
-    gb.play_games(5, max_turns=20, num_games=4)
+    gb.play_games(100, max_turns=20, num_games=4)
 
     # print("NaiveBot:")
     # print(nb)
     print("GreedyBot:")
     print(gb)
+    print(nb)

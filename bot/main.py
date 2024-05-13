@@ -22,11 +22,11 @@ class BotInterface(ABC):
         # bot won
         self.total_turns_won = 0
 
-    def play_game(self, max_turns=6) -> GameState:
+    def play_game(self, max_turns=6, word=None) -> GameState:
         """
         Non-interactively plays a game of Wordle and returns the finished game state
         """
-        game = GameState()
+        game = GameState(word=word)
         while not game.is_finished(max_turns):
             guess = self.generate_word(game)
             game.attempt_guess(guess)
@@ -45,12 +45,19 @@ class BotInterface(ABC):
 
         return game
 
-    def play_games(self, n: int, max_turns=6) -> None:
+    def play_games(self, n: int, max_turns=6, words=None) -> None:
         """
         Non-interactively plays n games of Wordle
+
+        words: a list of words that will be the answers of each game
         """
-        for _ in range(n):
-            self.play_game(max_turns)
+        if words is not None:
+            for i in range(n):
+                # print("playing game with answer:", words[i])
+                self.play_game(max_turns, word=words[i])
+        else:
+            for _ in range(n):
+                self.play_game(max_turns)
 
     def __repr__(self) -> str:
         """
@@ -201,6 +208,12 @@ class SimpleBot(BotInterface):
         """
         # Randomly selects a possible word
         if len(self.possible_words) != 0 and game.turn != 5:
+            # print(
+            #     "length of possible words:",
+            #     len(self.possible_words),
+            #     "turn:",
+            #     game.turn,
+            # )
             next_guess = random.choice(list(self.possible_words))
             self.filter(next_guess)  # filter out the next guess
         else:
@@ -387,13 +400,13 @@ class HardBot(BotInterface):
         self.num_yellow = 0
         self.metric_met = False
 
-    def play_game(self, max_turns=6):
+    def play_game(self, max_turns=6, word=None):
         # reset things
         self.metric_met = False
         self.num_green = 0
         self.num_yellow = 0
         # play the game
-        super().play_game(max_turns)
+        super().play_game(max_turns, word)
 
     def generate_word(self, game: GameState) -> str:
         """
@@ -515,11 +528,40 @@ class HardBot(BotInterface):
         self.possible_words -= words_to_remove
 
 
-if __name__ == "__main__":
-    sb = SimpleBot()
-    sb.play_games(100)
-    print(sb)
+def generate_word(num_words) -> str:
+    """
+    Returns a new valid 5-letter Wordle word
+    """
+    # word list found here: https://gist.github.com/scholtes/94f3c0303ba6a7768b47583aff36654d#file-wordle-la-txt
+    # La words that can be guessed and which can be the word of the day
+    # Ta words that can be guessed but are never selected as the word of the day
 
-    hb = HardBot(type="pool", metric=3)
-    hb.play_games(100)
+    # opening the file in read mode
+    word_list_file = open("public/wordle-La.txt", "r")
+
+    # reading the file
+    data = word_list_file.read()
+
+    # replacing end splitting the text
+    # when newline ('\n') is seen.
+    data_into_list = data.split("\n")
+
+    word_list_file.close()
+    return random.choices(data_into_list, k=num_words)
+
+
+if __name__ == "__main__":
+    num_games = 10
+
+    words = generate_word(num_games)
+    hb = HardBot(type="green", metric=3)
+    sb = SimpleBot()
+    mb = MiddleBot()
+
+    sb.play_games(num_games, words=words)
+    mb.play_games(num_games, words=words)
+    hb.play_games(num_games, words=words)
+
+    print(sb)
+    print(mb)
     print(hb)
