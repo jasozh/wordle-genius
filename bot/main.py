@@ -1,5 +1,6 @@
 from wordle.main import GameState, Feedback
 import random
+import string
 from abc import ABC, abstractmethod
 
 
@@ -112,6 +113,66 @@ class BotInterface(ABC):
         invalid_word_list_file.close()
         return set(data_into_list)
 
+    def possible_words_tf(self) -> dict[str, int]:
+        """
+        Given current possible Wordle guesses, returns a tuple of (key, value) where
+        key = letter and value = number of words with that letter. The list is
+        sorted in order, with the most common letter appearing first.
+
+        Example: tf = { "a": 5, "b": 3, ... }
+        """
+        alphabet = list(string.ascii_lowercase)
+        result = {}
+        for letter in alphabet:
+            words_with_letter = {
+                word
+                for word in self.possible_words
+                if letter in word
+            }
+            result[letter] = len(words_with_letter)
+
+        return result
+
+    def generate_word_with_tf(self) -> set[str]:
+        """
+        Looks at all words in self.possible_guesses and selects the next word
+        to guess based on letter frequency. A word is chosen if it contains the
+        most common letters.
+
+        Letter frequency is calculated as follows. Suppose we have the word "stair"
+        and the tf dictionary has the following:
+
+        tf = {
+            "s": 53,
+            "t": 49,
+            "a": 17,
+            "i": 19,
+            "r": 2
+        }
+
+        For all unique letters in the word, we sum up all the values, so "stair"
+        has score 140. Higher scores are better.
+
+        We make scores for every possible word and choose the word with the highest
+        score.
+        """
+        possible_tf = self.possible_words_tf()
+        scores = []  # ex: [ ("stair": 140), ... ]
+        for word in self.possible_words:
+            unique_letters = set(word)
+            score = 0
+            for letter in unique_letters:
+                score += possible_tf[letter]
+            scores.append((word, score))
+
+        scores_sorted = sorted(scores, reverse=True, key=lambda x: x[1])
+        # print(scores_sorted[:10])
+        # print(scores_sorted[-10:])
+        # print(scores_sorted[0])
+
+        # Return word with top score
+        return scores_sorted[0][0]
+
 
 class DummyBot(BotInterface):
     def __init__(self) -> None:
@@ -181,6 +242,7 @@ class SimpleBot(BotInterface):
         green_format = {}  # keys are letter positions & values are letter positions
         bad_letters = set()
         yellow_format = {}  # keys are letter pos & yellow letters that don't fit there
+        yellow_letters = set()
 
         for word in range(len(game.guesses)):  # words that have been guessed
             # letter position in that word
@@ -192,6 +254,7 @@ class SimpleBot(BotInterface):
                     # guess can't have letter in final guess
                     bad_letters.add(letter)
                 else:  # letter is yellow
+                    yellow_letters.add(letter)
                     if idx not in yellow_format.keys():
                         yellow_format[idx] = set(letter)
                     else:
@@ -199,26 +262,36 @@ class SimpleBot(BotInterface):
 
         words_to_remove = set()
         for word in full_set:
-            for idx in range(len(word)):
-                letter = word[idx]
-                if letter in bad_letters:
-                    words_to_remove.add(word)
-                    break
-                if idx not in green_format.keys() and idx not in yellow_format.keys():
-                    continue  # don't remove the word based on this
-                else:
+            letters_in_word = set(list(word))
+            if len(letters_in_word & yellow_letters) != len(yellow_letters):
+                # does not contain any of the yellow letters and yellow letters were foun
+                words_to_remove.add(word)
+            elif len(letters_in_word & bad_letters) != 0:
+                # contains at least one bad letter
+                words_to_remove.add(word)
+            else:
+                for idx in range(len(word)):
+                    letter = word[idx]
                     # print(idx in green_format.keys() ^ idx in yellow_format.keys())
-                    if idx in green_format.keys():
-                        # print("must be in green format dict")
-                        if green_format[idx] != letter:
-                            words_to_remove.add(word)
-                            break
+                    if letter in bad_letters:
+                        break
+                    if (
+                        idx not in green_format.keys()
+                        and idx not in yellow_format.keys()
+                    ):
+                        continue  # don't remove the word based on this
                     else:
-                        # print("must be in yellow format dict")
-                        if letter in yellow_format[idx]:
-                            # print("in yellow")
-                            words_to_remove.add(word)
-                            break
+                        if idx in green_format.keys():
+                            # print("must be in green format dict")
+                            if green_format[idx] != letter:
+                                words_to_remove.add(word)
+                                break
+                        else:
+                            # print("must be in yellow format dict")
+                            if letter in yellow_format[idx]:
+                                # print("in yellow")
+                                words_to_remove.add(word)
+                                break
 
         return full_set - words_to_remove
 
@@ -242,7 +315,16 @@ class MiddleBot(BotInterface):
         """
         # Randomly selects a possible word
         self.filter(game)
-        return random.choice(list(self.possible_words))
+
+        print(
+            "length of possible words:",
+            len(self.possible_words),
+            "turn:",
+            game.turn,
+        )
+
+        # return random.choice(list(self.possible_words))
+        return self.generate_word_with_tf()
 
     def filter(self, game: GameState) -> None:
         # Filter out all words that cannot possibly be the final word
@@ -382,6 +464,7 @@ class HardBot(BotInterface):
         green_format = {}  # keys are letter positions & values are letter positions
         bad_letters = set()
         yellow_format = {}  # keys are letter pos & yellow letters that don't fit there
+        yellow_letters = set()
 
         for word in range(len(game.guesses)):  # words that have been guessed
             # letter position in that word
@@ -393,6 +476,7 @@ class HardBot(BotInterface):
                     # guess can't have letter in final guess
                     bad_letters.add(letter)
                 else:  # letter is yellow
+                    yellow_letters.add(letter)
                     if idx not in yellow_format.keys():
                         yellow_format[idx] = set(letter)
                     else:
@@ -400,22 +484,32 @@ class HardBot(BotInterface):
 
         words_to_remove = set()
         for word in full_set:
-            for idx in range(len(word)):
-                letter = word[idx]
-                if letter in bad_letters:
-                    words_to_remove.add(word)
-                    break
-                if idx not in green_format.keys() and idx not in yellow_format.keys():
-                    continue  # don't remove the word based on this
-                else:
-                    if idx in green_format.keys():
-                        if green_format[idx] != letter:
-                            words_to_remove.add(word)
-                            break
+            letters_in_word = set(list(word))
+            if len(letters_in_word & yellow_letters) != len(yellow_letters):
+                # does not contain any of the yellow letters and yellow letters were foun
+                words_to_remove.add(word)
+            elif len(letters_in_word & bad_letters) != 0:
+                # contains at least one bad letter
+                words_to_remove.add(word)
+            else:
+                for idx in range(len(word)):
+                    letter = word[idx]
+                    if letter in bad_letters:
+                        break
+                    if (
+                        idx not in green_format.keys()
+                        and idx not in yellow_format.keys()
+                    ):
+                        continue  # don't remove the word based on this
                     else:
-                        if letter in yellow_format[idx]:
-                            words_to_remove.add(word)
-                            break
+                        if idx in green_format.keys():
+                            if green_format[idx] != letter:
+                                words_to_remove.add(word)
+                                break
+                        else:
+                            if letter in yellow_format[idx]:
+                                words_to_remove.add(word)
+                                break
 
         return full_set - words_to_remove
 

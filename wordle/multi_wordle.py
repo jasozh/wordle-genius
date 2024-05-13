@@ -115,7 +115,8 @@ class Multi_Wordle(GameState):
         ret = "turns: " + str(self.xturn) + "\n"
 
         for idx in range(len(self.games)):
-            ret += f"{idx} game: word is {self.games[idx].word}\n"  # add the word
+            # add the word
+            ret += f"{idx} game: word is {self.games[idx].word}\n"
             for i in range(len(self.games[idx].guesses)):
                 ret += str(self.games[idx].guesses[i]) + "\n"
                 ret += str(self.games[idx].feedback[i]) + "\n"
