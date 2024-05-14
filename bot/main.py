@@ -235,7 +235,7 @@ class BotInterface(ABC):
         population = initial_population
 
         # Run for each generation
-        num_generations = 2
+        num_generations = 5
         for _ in range(num_generations):
             # Natural selection: check fitness of population and grab best
             # performing half
@@ -527,7 +527,7 @@ class MiddleBotTf(MiddleBot):
 
     def generate_word(self, game: GameState) -> str:
         self.filter(game)
-        return self.generate_word_with_tf(game)
+        return self.generate_word_with_tf()
 
 
 class MiddleBotGenetic(MiddleBot):
