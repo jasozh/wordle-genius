@@ -235,7 +235,7 @@ class BotInterface(ABC):
         population = initial_population
 
         # Run for each generation
-        num_generations = 1
+        num_generations = 2
         for _ in range(num_generations):
             # Natural selection: check fitness of population and grab best
             # performing half
@@ -290,9 +290,24 @@ class BotInterface(ABC):
             (word, fitness(word))
             for word in final_population
         ]
+        sorted_final_population_fitness = sorted(
+            final_population_fitness, reverse=True)
+
+        # print(
+        #     f"initial population {self.possible_words} final population {population}")
 
         # Return word in the last generation with the highest fitness
-        best_word = sorted(final_population_fitness, reverse=True)[0][0]
+        if len(sorted_final_population_fitness) > 0:
+            best_word = sorted_final_population_fitness[0][0]
+
+        # If best word doesn't exist, randomly choose a word from the population
+        # of the final generation.
+        elif len(population) > 1:
+            best_word = random.choice(population)
+        # If no words in population, choose randomly from all possible words
+        else:
+            best_word = random.choice(initial_population)
+
         return best_word
 
 
@@ -438,15 +453,15 @@ class MiddleBot(BotInterface):
         # Randomly selects a possible word
         self.filter(game)
 
-        print(
-            "length of possible words:",
-            len(self.possible_words),
-            "turn:",
-            game.turn,
-        )
+        # print(
+        #     "length of possible words:",
+        #     len(self.possible_words),
+        #     "turn:",
+        #     game.turn,
+        # )
 
-        # return random.choice(list(self.possible_words))
-        return self.generate_word_with_tf()
+        return random.choice(list(self.possible_words))
+        # return self.generate_word_with_tf()
 
     def filter(self, game: GameState) -> None:
         # Filter out all words that cannot possibly be the final word
@@ -500,6 +515,32 @@ class MiddleBot(BotInterface):
 
             # Remove all words to be removed
             self.possible_words = self.possible_words - words_to_remove
+
+
+class MiddleBotTf(MiddleBot):
+    def __init__(self) -> None:
+        """
+        Bot using letter frequency to generate a word but keeping MiddleBot's
+        filter strategy.
+        """
+        super().__init__()
+
+    def generate_word(self, game: GameState) -> str:
+        self.filter(game)
+        return self.generate_word_with_tf(game)
+
+
+class MiddleBotGenetic(MiddleBot):
+    def __init__(self) -> None:
+        """
+        Bot using a genetic algorithm to generate a word but keeping MiddleBot's
+        filter strategy.
+        """
+        super().__init__()
+
+    def generate_word(self, game: GameState) -> str:
+        self.filter(game)
+        return self.generate_word_with_genetic(game)
 
 
 class HardBot(BotInterface):
