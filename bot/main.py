@@ -133,7 +133,7 @@ class BotInterface(ABC):
 
         return result
 
-    def generate_word_with_tf(self) -> set[str]:
+    def generate_word_with_tf(self) -> str:
         """
         Looks at all words in self.possible_guesses and selects the next word
         to guess based on letter frequency. A word is chosen if it contains the
@@ -172,6 +172,128 @@ class BotInterface(ABC):
 
         # Return word with top score
         return scores_sorted[0][0]
+
+    def generate_word_with_genetic(self, game: GameState, n=100) -> str:
+        """
+        Generates a word based on a genetic algorithm. The steps are outlined as
+        follows:
+
+        1. Start with all possible words in the current turn. We choose a small
+           subset P of n words randomly from this set.
+
+        2. Define a fitness function f(w) where w is a candidate word:
+
+           f(w) = sum_{i=1}^{num of guesses} [( gi - gw ) + (yi - yw)
+
+           gi = number of green letters in guess
+           gw = number of green letters if w was the target word
+           yi = number of yellow letters in guess
+           yw = number of yellow letters if w was the target word
+
+        3. Remove the worst-performing half of the initial population according
+           to the fitness function.
+
+        4. For the remaining half, do crossover. The surviving population is
+           divided into pairs and new words are created as follows:
+
+           parent 1: "stair"
+           parent 2: "slate"
+           child word: "state"
+
+        5. Mutate the child randomly
+        """
+        initial_population = random.sample(
+            self.possible_words, min(n, len(self.possible_words)))
+
+        def fitness(w: str) -> int:
+            """
+            Measures the fitness of some potential target word w
+            """
+            result = 0
+            for i in range(len(game.guesses)):
+                guess = game.guesses[i]
+                feedback = game.feedback[i]
+                gi = feedback.count(Feedback.GREEN)
+                yi = feedback.count(Feedback.YELLOW)
+
+                # Number of green letters if w was the target word
+                gw = 0
+                for i in range(len(w)):
+                    if w[i] == guess[i]:
+                        gw += 1
+
+                # Number of yellow letters if w was the target word
+                yw = 0
+                for i in range(len(w)):
+                    if w[i] != guess[i] and w[i] in guess:
+                        yw += 1
+                result += (gi - gw) + (yi - yw)
+                # print(f"{gi} {gw} {yi} {yw}")
+            return result
+
+        # Set population to the initial population
+        population = initial_population
+
+        # Run for each generation
+        num_generations = 1
+        for _ in range(num_generations):
+            # Natural selection: check fitness of population and grab best
+            # performing half
+            population_fitness = [
+                (word, fitness(word))
+                for word in population
+            ]
+            surviving_population = sorted(
+                population_fitness, reverse=True)[:len(population) // 2]
+            # print(surviving_population)
+
+            # Randomly pair up words
+            shuffled_population = [
+                word for (word, fitness) in surviving_population]
+            random.shuffle(shuffled_population)
+            # print(shuffled_population)
+            pairs = []
+            for i in range(0, len(shuffled_population) - 1, 2):
+                pair = (shuffled_population[i], shuffled_population[i+1])
+                pairs.append(pair)
+
+            # Do crossover for every pair and add to next generation
+            next_generation = []
+            for (parent1, parent2) in pairs:
+                pivot = random.randint(0, len(parent1) - 1)
+
+                # ex: parent1 = "slate", parent2 = "stair". With pivot = 2,
+                # we have child1 = "state" and child2 = "slair"
+                children = [
+                    parent1[:pivot] + parent2[pivot:],  # L1 + R2
+                    parent2[pivot:] + parent1[:pivot],  # R2 + L1
+                    parent2[:pivot] + parent1[pivot:],  # L2 + R1
+                    parent1[pivot:] + parent2[:pivot],  # R1 + L2
+                ]
+                # print(f"parents and children {parent1} {parent2} {children}")
+                next_generation += children
+
+            # Set population as the next generation
+            population = next_generation
+            # print(f"hello {population}")
+
+        # Filter the final population by words that are valid Wordle words
+        all_words = self.all_words()
+        final_population = [
+            word
+            for word in population
+            if word in all_words
+        ]
+
+        # Calculate fitness
+        final_population_fitness = [
+            (word, fitness(word))
+            for word in final_population
+        ]
+
+        # Return word in the last generation with the highest fitness
+        best_word = sorted(final_population_fitness, reverse=True)[0][0]
+        return best_word
 
 
 class DummyBot(BotInterface):
