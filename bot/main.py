@@ -300,11 +300,8 @@ class BotInterface(ABC):
         if len(sorted_final_population_fitness) > 0:
             best_word = sorted_final_population_fitness[0][0]
 
-        # If best word doesn't exist, randomly choose a word from the population
-        # of the final generation.
-        elif len(population) > 1:
-            best_word = random.choice(population)
-        # If no words in population, choose randomly from all possible words
+        # If best word doesn't exist, randomly choose a word from the initial
+        # population:
         else:
             best_word = random.choice(initial_population)
 
