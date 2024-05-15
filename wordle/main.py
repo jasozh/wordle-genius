@@ -162,7 +162,7 @@ def play(max_turns=6):
     """
     # Intro
     print("Welcome to Wordle!\n")
-    game = GameState(word="hello")
+    game = GameState()  # word="hello")
 
     # Play game
     while not game.is_finished(max_turns=max_turns):
