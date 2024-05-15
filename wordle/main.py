@@ -105,11 +105,21 @@ class GameState:
         index = 0
         for l in guess:
             guesses_temp[index] = l
-            if l in self.word:
-                if l == self.word[index]:
+            if l in self.word:  # if this letter is in the word
+                green_found = 0
+                num_occurences = self.word.count(l)  # correct num of green total
+                for i in range(len(guess)):
+                    if guess[i] == self.word[i] and guess[i] == l:
+                        green_found += 1
+
+                if guess[index] == self.word[index]:
                     feedback_temp[index] = Feedback.GREEN
                 else:
-                    feedback_temp[index] = Feedback.YELLOW
+                    if green_found == num_occurences:
+                        feedback_temp[index] = Feedback.GRAY
+                    elif green_found < num_occurences:
+                        feedback_temp[index] = Feedback.YELLOW  # set to yellow
+                        green_found += 1  # increase number 'green' found
             else:
                 feedback_temp[index] = Feedback.GRAY
             index += 1
@@ -152,7 +162,7 @@ def play(max_turns=6):
     """
     # Intro
     print("Welcome to Wordle!\n")
-    game = GameState()
+    game = GameState(word="hello")
 
     # Play game
     while not game.is_finished(max_turns=max_turns):

@@ -124,11 +124,7 @@ class BotInterface(ABC):
         alphabet = list(string.ascii_lowercase)
         result = {}
         for letter in alphabet:
-            words_with_letter = {
-                word
-                for word in self.possible_words
-                if letter in word
-            }
+            words_with_letter = {word for word in self.possible_words if letter in word}
             result[letter] = len(words_with_letter)
 
         return result
@@ -316,12 +312,12 @@ class MiddleBot(BotInterface):
         # Randomly selects a possible word
         self.filter(game)
 
-        print(
-            "length of possible words:",
-            len(self.possible_words),
-            "turn:",
-            game.turn,
-        )
+        # print(
+        #     "length of possible words:",
+        #     len(self.possible_words),
+        #     "turn:",
+        #     game.turn,
+        # )
 
         # return random.choice(list(self.possible_words))
         return self.generate_word_with_tf()
