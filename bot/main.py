@@ -1,5 +1,6 @@
 from wordle.main import GameState, Feedback
 import random
+import string
 from abc import ABC, abstractmethod
 
 
@@ -21,11 +22,11 @@ class BotInterface(ABC):
         # bot won
         self.total_turns_won = 0
 
-    def play_game(self, max_turns=6) -> GameState:
+    def play_game(self, max_turns=6, word=None) -> GameState:
         """
         Non-interactively plays a game of Wordle and returns the finished game state
         """
-        game = GameState()
+        game = GameState(word=word)
         while not game.is_finished(max_turns):
             guess = self.generate_word(game)
             game.attempt_guess(guess)
@@ -44,12 +45,19 @@ class BotInterface(ABC):
 
         return game
 
-    def play_games(self, n: int, max_turns=6) -> None:
+    def play_games(self, n: int, max_turns=6, words=None) -> None:
         """
         Non-interactively plays n games of Wordle
+
+        words: a list of words that will be the answers of each game
         """
-        for _ in range(n):
-            self.play_game(max_turns)
+        if words is not None:
+            for i in range(n):
+                # print("playing game with answer:", words[i])
+                self.play_game(max_turns, word=words[i])
+        else:
+            for _ in range(n):
+                self.play_game(max_turns)
 
     def __repr__(self) -> str:
         """
@@ -105,6 +113,66 @@ class BotInterface(ABC):
         invalid_word_list_file.close()
         return set(data_into_list)
 
+    def possible_words_tf(self) -> dict[str, int]:
+        """
+        Given current possible Wordle guesses, returns a tuple of (key, value) where
+        key = letter and value = number of words with that letter. The list is
+        sorted in order, with the most common letter appearing first.
+
+        Example: tf = { "a": 5, "b": 3, ... }
+        """
+        alphabet = list(string.ascii_lowercase)
+        result = {}
+        for letter in alphabet:
+            words_with_letter = {
+                word
+                for word in self.possible_words
+                if letter in word
+            }
+            result[letter] = len(words_with_letter)
+
+        return result
+
+    def generate_word_with_tf(self) -> set[str]:
+        """
+        Looks at all words in self.possible_guesses and selects the next word
+        to guess based on letter frequency. A word is chosen if it contains the
+        most common letters.
+
+        Letter frequency is calculated as follows. Suppose we have the word "stair"
+        and the tf dictionary has the following:
+
+        tf = {
+            "s": 53,
+            "t": 49,
+            "a": 17,
+            "i": 19,
+            "r": 2
+        }
+
+        For all unique letters in the word, we sum up all the values, so "stair"
+        has score 140. Higher scores are better.
+
+        We make scores for every possible word and choose the word with the highest
+        score.
+        """
+        possible_tf = self.possible_words_tf()
+        scores = []  # ex: [ ("stair": 140), ... ]
+        for word in self.possible_words:
+            unique_letters = set(word)
+            score = 0
+            for letter in unique_letters:
+                score += possible_tf[letter]
+            scores.append((word, score))
+
+        scores_sorted = sorted(scores, reverse=True, key=lambda x: x[1])
+        # print(scores_sorted[:10])
+        # print(scores_sorted[-10:])
+        # print(scores_sorted[0])
+
+        # Return word with top score
+        return scores_sorted[0][0]
+
 
 class DummyBot(BotInterface):
     def __init__(self) -> None:
@@ -140,12 +208,12 @@ class SimpleBot(BotInterface):
         """
         # Randomly selects a possible word
         if len(self.possible_words) != 0 and game.turn != 5:
-            print(
-                "length of possible words:",
-                len(self.possible_words),
-                "turn:",
-                game.turn,
-            )
+            # print(
+            #     "length of possible words:",
+            #     len(self.possible_words),
+            #     "turn:",
+            #     game.turn,
+            # )
             next_guess = random.choice(list(self.possible_words))
             self.filter(next_guess)  # filter out the next guess
         else:
@@ -174,6 +242,7 @@ class SimpleBot(BotInterface):
         green_format = {}  # keys are letter positions & values are letter positions
         bad_letters = set()
         yellow_format = {}  # keys are letter pos & yellow letters that don't fit there
+        yellow_letters = set()
 
         for word in range(len(game.guesses)):  # words that have been guessed
             # letter position in that word
@@ -185,6 +254,7 @@ class SimpleBot(BotInterface):
                     # guess can't have letter in final guess
                     bad_letters.add(letter)
                 else:  # letter is yellow
+                    yellow_letters.add(letter)
                     if idx not in yellow_format.keys():
                         yellow_format[idx] = set(letter)
                     else:
@@ -192,26 +262,36 @@ class SimpleBot(BotInterface):
 
         words_to_remove = set()
         for word in full_set:
-            for idx in range(len(word)):
-                letter = word[idx]
-                if letter in bad_letters:
-                    words_to_remove.add(word)
-                    break
-                if idx not in green_format.keys() and idx not in yellow_format.keys():
-                    continue  # don't remove the word based on this
-                else:
+            letters_in_word = set(list(word))
+            if len(letters_in_word & yellow_letters) != len(yellow_letters):
+                # does not contain any of the yellow letters and yellow letters were foun
+                words_to_remove.add(word)
+            elif len(letters_in_word & bad_letters) != 0:
+                # contains at least one bad letter
+                words_to_remove.add(word)
+            else:
+                for idx in range(len(word)):
+                    letter = word[idx]
                     # print(idx in green_format.keys() ^ idx in yellow_format.keys())
-                    if idx in green_format.keys():
-                        # print("must be in green format dict")
-                        if green_format[idx] != letter:
-                            words_to_remove.add(word)
-                            break
+                    if letter in bad_letters:
+                        break
+                    if (
+                        idx not in green_format.keys()
+                        and idx not in yellow_format.keys()
+                    ):
+                        continue  # don't remove the word based on this
                     else:
-                        # print("must be in yellow format dict")
-                        if letter in yellow_format[idx]:
-                            # print("in yellow")
-                            words_to_remove.add(word)
-                            break
+                        if idx in green_format.keys():
+                            # print("must be in green format dict")
+                            if green_format[idx] != letter:
+                                words_to_remove.add(word)
+                                break
+                        else:
+                            # print("must be in yellow format dict")
+                            if letter in yellow_format[idx]:
+                                # print("in yellow")
+                                words_to_remove.add(word)
+                                break
 
         return full_set - words_to_remove
 
@@ -235,7 +315,16 @@ class MiddleBot(BotInterface):
         """
         # Randomly selects a possible word
         self.filter(game)
-        return random.choice(list(self.possible_words))
+
+        print(
+            "length of possible words:",
+            len(self.possible_words),
+            "turn:",
+            game.turn,
+        )
+
+        # return random.choice(list(self.possible_words))
+        return self.generate_word_with_tf()
 
     def filter(self, game: GameState) -> None:
         # Filter out all words that cannot possibly be the final word
@@ -311,13 +400,13 @@ class HardBot(BotInterface):
         self.num_yellow = 0
         self.metric_met = False
 
-    def play_game(self, max_turns=6):
+    def play_game(self, max_turns=6, word=None):
         # reset things
         self.metric_met = False
         self.num_green = 0
         self.num_yellow = 0
         # play the game
-        super().play_game(max_turns)
+        super().play_game(max_turns, word)
 
     def generate_word(self, game: GameState) -> str:
         """
@@ -375,6 +464,7 @@ class HardBot(BotInterface):
         green_format = {}  # keys are letter positions & values are letter positions
         bad_letters = set()
         yellow_format = {}  # keys are letter pos & yellow letters that don't fit there
+        yellow_letters = set()
 
         for word in range(len(game.guesses)):  # words that have been guessed
             # letter position in that word
@@ -386,6 +476,7 @@ class HardBot(BotInterface):
                     # guess can't have letter in final guess
                     bad_letters.add(letter)
                 else:  # letter is yellow
+                    yellow_letters.add(letter)
                     if idx not in yellow_format.keys():
                         yellow_format[idx] = set(letter)
                     else:
@@ -393,22 +484,32 @@ class HardBot(BotInterface):
 
         words_to_remove = set()
         for word in full_set:
-            for idx in range(len(word)):
-                letter = word[idx]
-                if letter in bad_letters:
-                    words_to_remove.add(word)
-                    break
-                if idx not in green_format.keys() and idx not in yellow_format.keys():
-                    continue  # don't remove the word based on this
-                else:
-                    if idx in green_format.keys():
-                        if green_format[idx] != letter:
-                            words_to_remove.add(word)
-                            break
+            letters_in_word = set(list(word))
+            if len(letters_in_word & yellow_letters) != len(yellow_letters):
+                # does not contain any of the yellow letters and yellow letters were foun
+                words_to_remove.add(word)
+            elif len(letters_in_word & bad_letters) != 0:
+                # contains at least one bad letter
+                words_to_remove.add(word)
+            else:
+                for idx in range(len(word)):
+                    letter = word[idx]
+                    if letter in bad_letters:
+                        break
+                    if (
+                        idx not in green_format.keys()
+                        and idx not in yellow_format.keys()
+                    ):
+                        continue  # don't remove the word based on this
                     else:
-                        if letter in yellow_format[idx]:
-                            words_to_remove.add(word)
-                            break
+                        if idx in green_format.keys():
+                            if green_format[idx] != letter:
+                                words_to_remove.add(word)
+                                break
+                        else:
+                            if letter in yellow_format[idx]:
+                                words_to_remove.add(word)
+                                break
 
         return full_set - words_to_remove
 
@@ -425,3 +526,42 @@ class HardBot(BotInterface):
                     words_to_remove.add(word)
 
         self.possible_words -= words_to_remove
+
+
+def generate_word(num_words) -> str:
+    """
+    Returns a new valid 5-letter Wordle word
+    """
+    # word list found here: https://gist.github.com/scholtes/94f3c0303ba6a7768b47583aff36654d#file-wordle-la-txt
+    # La words that can be guessed and which can be the word of the day
+    # Ta words that can be guessed but are never selected as the word of the day
+
+    # opening the file in read mode
+    word_list_file = open("public/wordle-La.txt", "r")
+
+    # reading the file
+    data = word_list_file.read()
+
+    # replacing end splitting the text
+    # when newline ('\n') is seen.
+    data_into_list = data.split("\n")
+
+    word_list_file.close()
+    return random.choices(data_into_list, k=num_words)
+
+
+if __name__ == "__main__":
+    num_games = 10
+
+    words = generate_word(num_games)
+    hb = HardBot(type="green", metric=3)
+    sb = SimpleBot()
+    mb = MiddleBot()
+
+    sb.play_games(num_games, words=words)
+    mb.play_games(num_games, words=words)
+    hb.play_games(num_games, words=words)
+
+    print(sb)
+    print(mb)
+    print(hb)
