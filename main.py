@@ -108,7 +108,9 @@ if __name__ == "__main__":
                     print("Invalid input.")
 
             multi_wordle = wordle.multi_wordle.Multi_Wordle(num_games=num_games)
-            wordle.multi_wordle.play(multi_wordle, helper_bot=helper_bot)
+            wordle.multi_wordle.play(
+                multi_wordle, max_turns=int(num_games * 2.5), helper_bot=helper_bot
+            )
         case "3":
             print("You will be assisted by Quantum Bot!")
             helper_bot = bot.quantum.QuantumBot()
