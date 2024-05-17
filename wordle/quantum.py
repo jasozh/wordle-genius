@@ -179,17 +179,20 @@ class GameState:
         )
 
 
-def play():
+def play(helper_bot=None):
     """
     Plays an interactive game of Wordle.
     """
     # Intro
-    print("Welcome to Wordle!\n")
+    print("Welcome to Quantum Wordle!\n")
     game = GameState()
 
     # Play game
     while not game.is_finished():
-        guess = input("What is your guess?\n")
+        if helper_bot:
+            suggestion = helper_bot.generate_word(game)
+            print(f"Your helper bot thinks you should guess {suggestion}!")
+        guess = input("What is your guess?\n> ")
         game.attempt_guess(guess)
         game.print_game_state()
 
