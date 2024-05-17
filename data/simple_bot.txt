@@ -1,1 +1,4 @@
 Type: Simple Bot, Total number of games: 100, Win rate: 0.63, Total turns for winning games: 346, Avg turns: 5.49
+Type: Simple Bot, Total number of games: 1000, Win rate: 0.909, Total turns for winning games: 4733, Avg turns: 5.21
+Type: Simple Bot, Total number of games: 1000, Win rate: 0.914, Total turns for winning games: 4755, Avg turns: 5.2
+Type: Simple Bot, Total number of games: 1000, Win rate: 0.893, Total turns for winning games: 4667, Avg turns: 5.23

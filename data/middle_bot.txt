@@ -1,1 +1,2 @@
 Type: Middle Bot, Total number of games: 100, Win rate: 0.87, Total turns for winning games: 406, Avg turns: 4.67
+Type: Middle Bot, Total number of games: 1000, Win rate: 0.911, Total turns for winning games: 3920, Avg turns: 4.3

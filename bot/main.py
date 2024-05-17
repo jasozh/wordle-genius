@@ -124,11 +124,7 @@ class BotInterface(ABC):
         alphabet = list(string.ascii_lowercase)
         result = {}
         for letter in alphabet:
-            words_with_letter = {
-                word
-                for word in self.possible_words
-                if letter in word
-            }
+            words_with_letter = {word for word in self.possible_words if letter in word}
             result[letter] = len(words_with_letter)
 
         return result
@@ -711,7 +707,7 @@ def generate_word(num_words) -> str:
 
 
 if __name__ == "__main__":
-    num_games = 10
+    num_games = 1000
 
     words = generate_word(num_games)
     hb = HardBot(type="green", metric=3)
@@ -719,9 +715,11 @@ if __name__ == "__main__":
     mb = MiddleBot()
 
     sb.play_games(num_games, words=words)
+
     mb.play_games(num_games, words=words)
-    hb.play_games(num_games, words=words)
+
+    # hb.play_games(num_games, words=words)
 
     print(sb)
-    print(mb)
-    print(hb)
+    # print(mb)
+    # print(hb)

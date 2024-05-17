@@ -8,3 +8,13 @@ Type: Pool, Metric: 60, Total number of games: 100 Win rate: 0.63, Total turns f
 Type: Pool, Metric: 70, Total number of games: 100 Win rate: 0.66, Total turns for winning games: 357, Avg turns: 5.41
 Type: Pool, Metric: 80, Total number of games: 100 Win rate: 0.67, Total turns for winning games: 367, Avg turns: 5.48
 Type: Pool, Metric: 90, Total number of games: 100 Win rate: 0.59, Total turns for winning games: 316, Avg turns: 5.36
+Type: Pool, Metric: 0, Total number of games: 1000, Win rate: 0.908, Total turns for winning games: 4772, Avg turns: 5.26
+Type: Pool, Metric: 10, Total number of games: 1000, Win rate: 0.907, Total turns for winning games: 4274, Avg turns: 4.71
+Type: Pool, Metric: 20, Total number of games: 1000, Win rate: 0.913, Total turns for winning games: 4274, Avg turns: 4.68
+Type: Pool, Metric: 30, Total number of games: 1000, Win rate: 0.903, Total turns for winning games: 4208, Avg turns: 4.66
+Type: Pool, Metric: 40, Total number of games: 1000, Win rate: 0.915, Total turns for winning games: 4320, Avg turns: 4.72
+Type: Pool, Metric: 50, Total number of games: 1000, Win rate: 0.912, Total turns for winning games: 4203, Avg turns: 4.61
+Type: Pool, Metric: 60, Total number of games: 1000, Win rate: 0.898, Total turns for winning games: 4129, Avg turns: 4.6
+Type: Pool, Metric: 70, Total number of games: 1000, Win rate: 0.894, Total turns for winning games: 4138, Avg turns: 4.63
+Type: Pool, Metric: 80, Total number of games: 1000, Win rate: 0.908, Total turns for winning games: 4252, Avg turns: 4.68
+Type: Pool, Metric: 90, Total number of games: 1000, Win rate: 0.894, Total turns for winning games: 4168, Avg turns: 4.66
