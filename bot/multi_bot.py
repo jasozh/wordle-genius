@@ -67,8 +67,8 @@ class BotInterface(ABC):
             else:
                 game = self.play_game(max_turns=max_turns, num_games=num_games)
             # print(game.answers)
-            # print(f"Turns: {game.xturn}")
-            # game.print_game_state()
+            print(f"Turns: {game.xturn}")
+            game.print_game_state()
 
     def __repr__(self) -> str:
         """
@@ -299,14 +299,13 @@ class GreedyBot(BotInterface):
 
 
 if __name__ == "__main__":
+
+    print("NaiveBot:")
     nb = NaiveBot()
-    nb.play_games(100, max_turns=20, num_games=4)
-
-    gb = GreedyBot()
-    gb.play_games(100, max_turns=20, num_games=4)
-
-    # print("NaiveBot:")
-    # print(nb)
-    print("GreedyBot:")
-    print(gb)
+    nb.play_games(1, max_turns=12, num_games=4)
     print(nb)
+
+    print("GreedyBot:")
+    gb = GreedyBot()
+    gb.play_games(1, max_turns=12, num_games=4)
+    print(gb)

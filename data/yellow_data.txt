@@ -4,6 +4,7 @@ Type: Yellow, Metric: 2, Total number of games: 100, Win rate: 0.65, Total turns
 Type: Yellow, Metric: 3, Total number of games: 100, Win rate: 0.54, Total turns for winning games: 296, Avg turns: 5.48
 Type: Yellow, Metric: 4, Total number of games: 100, Win rate: 0.65, Total turns for winning games: 358, Avg turns: 5.51
 Type: Yellow, Metric: 5, Total number of games: 100, Win rate: 0.6, Total turns for winning games: 337, Avg turns: 5.62
+
 Type: Yellow, Metric: 0, Total number of games: 1000, Win rate: 0.872, Total turns for winning games: 4036, Avg turns: 4.63
 Type: Yellow, Metric: 1, Total number of games: 1000, Win rate: 0.873, Total turns for winning games: 4086, Avg turns: 4.68
 Type: Yellow, Metric: 2, Total number of games: 1000, Win rate: 0.886, Total turns for winning games: 4161, Avg turns: 4.7

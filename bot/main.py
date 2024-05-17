@@ -30,6 +30,8 @@ class BotInterface(ABC):
         while not game.is_finished(max_turns):
             guess = self.generate_word(game)
             game.attempt_guess(guess)
+            print(f"Turn: {game.turn}")
+            game.print_game_state()
 
         # Add to games, update win rate, and reset possible words
         self.games.append(game)
@@ -547,19 +549,21 @@ def generate_word(num_words) -> str:
 
 
 if __name__ == "__main__":
-    num_games = 1000
+    num_games = 1
 
     words = generate_word(num_games)
-    hb = HardBot(type="green", metric=3)
+    hb = HardBot(type="aggregate", metric=4)
     sb = SimpleBot()
     mb = MiddleBot()
+    print(words)
 
+    print("SimpleBot playing:")
     sb.play_games(num_games, words=words)
-
+    print("MiddleBot playing:")
     mb.play_games(num_games, words=words)
+    print("HardBot playing:")
+    hb.play_games(num_games, words=words)
 
-    # hb.play_games(num_games, words=words)
-
-    print(sb)
+    # print(sb)
     # print(mb)
-    # print(hb)
+    print(hb)
