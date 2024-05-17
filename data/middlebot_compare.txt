@@ -1,0 +1,15 @@
+Type: Middle bot with random	Total number of games: 100, Win rate: 0.89, Total turns for winning games: 406, Avg turns: 4.56
+Type: Middle bot with tf		Total number of games: 100, Win rate: 0.89, Total turns for winning games: 392, Avg turns: 4.4
+Type: Middle bot with genetic	Total number of games: 100, Win rate: 0.89, Total turns for winning games: 416, Avg turns: 4.67
+
+Type: Middle bot with random	Total number of games: 100, Win rate: 0.87, Total turns for winning games: 397, Avg turns: 4.56
+Type: Middle bot with tf		Total number of games: 100, Win rate: 0.91, Total turns for winning games: 398, Avg turns: 4.37
+Type: Middle bot with genetic	Total number of games: 100, Win rate: 0.86, Total turns for winning games: 406, Avg turns: 4.72
+
+Type: Middle bot with random	Total number of games: 100, Win rate: 0.85, Total turns for winning games: 384, Avg turns: 4.52
+Type: Middle bot with tf		Total number of games: 100, Win rate: 0.94, Total turns for winning games: 409, Avg turns: 4.35
+Type: Middle bot with genetic	Total number of games: 100, Win rate: 0.82, Total turns for winning games: 390, Avg turns: 4.76
+
+Type: Middle bot with random	Total number of games: 100, Win rate: 0.9, Total turns for winning games: 406, Avg turns: 4.51
+Type: Middle bot with tf		Total number of games: 100, Win rate: 0.95, Total turns for winning games: 395, Avg turns: 4.16
+Type: Middle bot with genetic	Total number of games: 100, Win rate: 0.85, Total turns for winning games: 398, Avg turns: 4.68

@@ -58,7 +58,7 @@ class GameState:
         # Ta words that can be guessed but are never selected as the word of the day
 
         # opening the file in read mode
-        word_list_file = open("../public/wordle-La.txt", "r")
+        word_list_file = open("public/wordle-La.txt", "r")
 
         # reading the file
         data = word_list_file.read()
@@ -79,7 +79,7 @@ class GameState:
         # Ta words that can be guessed but are never selected as the word of the day
 
         # opening the file in read mode
-        word_list_file = open("../public/wordle-La.txt", "r")
+        word_list_file = open("public/wordle-La.txt", "r")
 
         # reading the file
         data = word_list_file.read()
@@ -163,7 +163,7 @@ class GameState:
         """
         Returns whether the game is over or not
         """
-        return self.turn > 5 or self.win
+        return self.win
 
     def __repr__(self) -> str:
         """
