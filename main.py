@@ -90,7 +90,7 @@ if __name__ == "__main__":
                     input("How many simultaneous games would you like to play? \n> ")
                 )
                 if num_games <= 0:
-                    print("You've selected in an valid number of games")
+                    print("You've selected in an invalid number of games")
             print(
                 """Choose a bot to help you!
 [1] - NaiveBot
@@ -104,12 +104,16 @@ if __name__ == "__main__":
                     helper_bot = bot.multi_bot.NaiveBot()
                 case "2":
                     helper_bot = bot.multi_bot.GreedyBot()
+                    helper_bot.scores = [0] * num_games
                 case _:
                     print("Invalid input.")
 
-            multi_wordle = wordle.multi_wordle.Multi_Wordle(num_games=num_games)
+            multi_wordle = wordle.multi_wordle.Multi_Wordle(
+                num_games=num_games
+            )  # words=["blitz", "hello", "visit", "manga"])
+            turn_limit = max(8, int(num_games) * 2.5)
             wordle.multi_wordle.play(
-                multi_wordle, max_turns=int(num_games * 2.5), helper_bot=helper_bot
+                multi_wordle, max_turns=turn_limit, helper_bot=helper_bot
             )
         case "3":
             print("You will be assisted by Quantum Bot!")

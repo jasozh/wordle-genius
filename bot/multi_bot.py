@@ -286,16 +286,26 @@ class GreedyBot(BotInterface):
 
         for idx in range(game.num_games):
             # game was solved (and stopped being played)
-            if self.scores[idx] == 10:
+            if game.games[idx].win:
+                self.scores[idx] = 10
                 continue
-            feedback = game.feedback[idx][game.xturn - 1]
-            score = 0
-            for val in feedback:
-                if val == Feedback.GREEN:
-                    score += 2
-                elif val == Feedback.YELLOW:
-                    score += 1
-            self.scores[idx] = max(score, self.scores[idx])
+            feedback = game.feedback[idx]  # look at all the feedback
+            green_letters = set()
+            yellow_letters = set()
+            for turn in range(game.xturn):
+                turn_feedback = feedback[turn]
+                for l in range(len(turn_feedback)):
+                    if turn_feedback[l] == Feedback.GREEN:
+                        green_letters.add(
+                            game.guesses[idx][turn][l]
+                        )  # should be a letter
+                    elif turn_feedback[l] == Feedback.YELLOW:
+                        yellow_letters.add(game.guesses[idx][turn][l])
+            self.scores[idx] = (
+                1 * len(yellow_letters)
+                + 2 * len(green_letters)
+                - 1 * len(yellow_letters & green_letters)
+            )
 
 
 if __name__ == "__main__":
