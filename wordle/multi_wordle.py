@@ -128,7 +128,7 @@ class Multi_Wordle(GameState):
         return ret
 
 
-def play(game, max_turns=8):
+def play(game, max_turns=8, helper_bot=None):
     """
     Plays an interactive game of Multi_Wordle.
     """
@@ -138,7 +138,10 @@ def play(game, max_turns=8):
 
     # Play game
     while not game.is_finished(max_turns=max_turns):
-        guess = input("What is your guess?\n")
+        if helper_bot:
+            suggestion = helper_bot.generate_word(game)
+            print(f"Your helper bot thinks you should guess {suggestion}!")
+        guess = input("What is your guess?\n> ")
         game.attempt_guess(guess, max_turns)
         game.print_game_state()
 
