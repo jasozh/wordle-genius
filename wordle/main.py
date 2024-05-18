@@ -146,7 +146,7 @@ class GameState:
         return ret
 
 
-def play(max_turns=6):
+def play(max_turns=6, helper_bot=None):
     """
     Plays an interactive game of Wordle.
     """
@@ -156,7 +156,10 @@ def play(max_turns=6):
 
     # Play game
     while not game.is_finished(max_turns=max_turns):
-        guess = input("What is your guess?\n")
+        if helper_bot:
+            suggestion = helper_bot.generate_word(game)
+            print(f"Your helper bot thinks you should guess {suggestion}!")
+        guess = input("What is your guess?\n> ")
         game.attempt_guess(guess)
         game.print_game_state()
 
