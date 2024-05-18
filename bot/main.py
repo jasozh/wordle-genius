@@ -199,7 +199,7 @@ class BotInterface(ABC):
         5. Mutate the child randomly
         """
         initial_population = random.sample(
-            self.possible_words, min(n, len(self.possible_words)))
+            list(self.possible_words), min(n, len(self.possible_words)))
 
         def fitness(w: str) -> int:
             """
